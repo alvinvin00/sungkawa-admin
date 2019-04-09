@@ -4,55 +4,55 @@ class Person {
   String _key;
   String _photo;
   String _nama,
-      _tempat_dimakamkan,
+      _tempatMakam,
       _umur,
       _keterangan,
-      _tanggal_semayam,
+      _tanggalSemayam,
       _lokasi,
       _alamat,
-      _tanggalmeninggal,
-      _status_pemakaman,
-      _waktu_semayam;
+      _tanggalMeninggal,
+      _statusPemakaman,
+      _waktuSemayam;
   int _timestamp;
 
   Person(
       this._key,
       this._photo,
       this._alamat,
-      this._status_pemakaman,
+      this._statusPemakaman,
       this._nama,
-      this._tempat_dimakamkan,
+      this._tempatMakam,
       this._umur,
       this._keterangan,
-      this._tanggal_semayam,
+      this._tanggalSemayam,
       this._lokasi,
-      this._tanggalmeninggal,
-      this._waktu_semayam,
+      this._tanggalMeninggal,
+      this._waktuSemayam,
       this._timestamp);
 
   String get key => _key;
 
-  String get status_pemakaman => _status_pemakaman;
+  String get photo => _photo;
 
   String get nama => _nama;
 
-  String get alamat => _alamat;
+  get tempatMakam => _tempatMakam;
 
-  String get tanggalmeninggal => _tanggalmeninggal;
+  get umur => _umur;
 
-  String get umur => _umur;
+  get keterangan => _keterangan;
 
-  String get tempat_dimakamkan => _tempat_dimakamkan;
+  get tanggalSemayam => _tanggalSemayam;
 
-  String get keterangan => _keterangan;
+  get lokasi => _lokasi;
 
-  String get tanggal_semayam => _tanggal_semayam;
+  get alamat => _alamat;
 
-  String get lokasi => _lokasi;
+  get tanggalMeninggal => _tanggalMeninggal;
 
-  String get waktu_semayam => _waktu_semayam;
+  get statusPemakaman => _statusPemakaman;
 
-  String get photo => _photo;
+  get waktuSemayam => _waktuSemayam;
 
   int get timestamp => _timestamp;
 
@@ -62,12 +62,12 @@ class Person {
     _umur = snapshot.value["usia"];
     _photo = snapshot.value['photo'];
     _alamat = snapshot.value['alamat'];
-    _tanggalmeninggal = snapshot.value["tanggal_meninggal"];
-    _status_pemakaman = snapshot.value["status_pemakaman"];
+    _tanggalMeninggal = snapshot.value["tanggal_meninggal"];
+    _statusPemakaman = snapshot.value["status_pemakaman"];
     _lokasi = snapshot.value["lokasi_semayam"];
-    _tempat_dimakamkan = snapshot.value["tempat_dimakamkan"];
-    _tanggal_semayam = snapshot.value["tanggal_semayam"];
-    _waktu_semayam = snapshot.value["waktu_semayam"];
+    _tempatMakam = snapshot.value["tempat_dimakamkan"];
+    _tanggalSemayam = snapshot.value["tanggal_semayam"];
+    _waktuSemayam = snapshot.value["waktu_semayam"];
     _keterangan = snapshot.value["keterangan"];
     _timestamp = snapshot.value['timestamp'];
   }

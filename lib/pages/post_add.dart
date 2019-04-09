@@ -34,7 +34,7 @@ class _PostAddState extends State<PostAdd> {
   final waktu_semayamController = TextEditingController();
   final dateformat = DateFormat('dd/MM/yyyy');
   final formats = DateFormat("EEEE, MMMM d, yyyy 'at' h:mma");
-  final timeformat = DateFormat('hh.mm.a');
+  final timeformat = DateFormat('hh:mm a');
   DateTime TanggalMeninggal ;
   DateTime TanggalSemayam;
   DateTime waktu_semayam;

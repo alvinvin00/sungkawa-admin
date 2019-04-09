@@ -20,54 +20,51 @@ class UpdatePost extends StatefulWidget {
   _UpdatePostState createState() => _UpdatePostState();
 }
 
-var postRef = FirebaseDatabase.instance
-    .reference()
-    .child('posts')
-    .child('-LbxeQpqZFHp4vc0uMJL');
-
 class _UpdatePostState extends State<UpdatePost> {
   String userId;
-
   String nama,
       umur,
       alamat,
       lokasi_disemayamkan,
       tanggal_meninggal,
       keterangan,
-      tempat_dimakamkan,
+      tempatMakam,
       tanggal_semayam,
       waktu_semayam;
   bool isChanged = false;
+  String key;
+  var postRef;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _processType = widget.person.status_pemakaman;
-    t_semayam = DateFormat('dd/MM/yyyy').parse(widget.person.tanggal_semayam);
-    t_meninggal =
-        DateFormat('dd/MM/yyyy').parse(widget.person.tanggalmeninggal);
-    wkt_semayam = DateFormat('hh.mm.a').parse(widget.person.waktu_semayam);
+    postRef = FirebaseDatabase.instance.reference().child('posts').child(key);
+    key = widget.person.key;
+    print(key);
+    _processType = widget.person.statusPemakaman;
+    tempatSemayam = dateFormat.parse(widget.person.tanggalSemayam);
+    tempatMeninggal = dateFormat.parse(widget.person.tanggalMeninggal);
+    waktuSemayam = timeFormat.parse(widget.person.waktuSemayam);
     nama = widget.person.nama;
     umur = widget.person.umur;
     alamat = widget.person.alamat;
     keterangan = widget.person.keterangan;
-    print(wkt_semayam);
+    print(waktuSemayam);
   }
 
-  DateTime t_semayam, wkt_semayam, t_meninggal;
+  DateTime tempatSemayam, waktuSemayam, tempatMeninggal;
 
-  var radiovalue;
+  var radioValue;
   DateTime date, time;
   int timestamp;
   File image;
-  var imagefile, _processType;
+  var imageFile, _processType;
   bool isLoading = false;
   String kubur;
-  final dateformat = DateFormat('dd/MM/yyyy');
-  final formats = DateFormat('dd/MM/yyyy');
-  final timeformat = DateFormat('hh.mm.a');
-  final formkey = GlobalKey<FormState>();
+  final dateFormat = DateFormat('dd/MM/yyyy');
+  final timeFormat = DateFormat('hh.mm.a');
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -82,11 +79,6 @@ class _UpdatePostState extends State<UpdatePost> {
               validateAndSubmit();
             },
           ),
-//          Container(
-//              height: 20,
-//              width: 20,
-//              child:
-//              isLoading == true ? CircularProgressIndicator() : Text('')),
         ],
         backgroundColor: Colors.grey[400],
       ),
@@ -94,7 +86,7 @@ class _UpdatePostState extends State<UpdatePost> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: formkey,
+          key: formKey,
           child: new ListView(
             children: <Widget>[
               CachedNetworkImage(
@@ -167,11 +159,11 @@ class _UpdatePostState extends State<UpdatePost> {
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
-                initialValue: t_meninggal,
+                initialValue: tempatMeninggal,
                 inputType: InputType.date,
                 editable: false,
-                format: dateformat,
-                onSaved: (value) => t_meninggal = value,
+                format: dateFormat,
+                onSaved: (value) => tempatMeninggal = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Meninggal',
                   border: OutlineInputBorder(
@@ -243,7 +235,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 textCapitalization: TextCapitalization.words,
               ),
               TextFormField(
-                initialValue: widget.person.tempat_dimakamkan,
+                initialValue: widget.person.tempatMakam,
                 validator: (value) => value.isEmpty
                     ? 'Tempat dimakamkan tidak boleh kosong'
                     : null,
@@ -256,15 +248,15 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onSaved: (value) => tempat_dimakamkan = value,
+                onSaved: (value) => tempatMakam = value,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
                 inputType: InputType.date,
                 editable: false,
-                format: dateformat,
-                initialValue: t_semayam,
-                onSaved: (value) => t_semayam = value,
+                format: dateFormat,
+                initialValue: tempatSemayam,
+                onSaved: (value) => tempatSemayam = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Pemakaman/Kremasi',
                   border: OutlineInputBorder(
@@ -279,9 +271,9 @@ class _UpdatePostState extends State<UpdatePost> {
               DateTimePickerFormField(
                 inputType: InputType.time,
                 editable: false,
-                format: timeformat,
-                initialValue: wkt_semayam,
-                onSaved: (value) => wkt_semayam = value,
+                format: timeFormat,
+                initialValue: waktuSemayam,
+                onSaved: (value) => waktuSemayam = value,
                 decoration: InputDecoration(
                   labelText: 'Jam Pemakaman/Kremasi',
                   border: OutlineInputBorder(
@@ -310,7 +302,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 onSaved: (value) => keterangan = value,
                 textCapitalization: TextCapitalization.sentences,
               ),
-              imagefile != null ? buildImage() : Text(''),
+              imageFile != null ? buildImage() : Text(''),
             ],
           ),
         ),
@@ -328,7 +320,7 @@ class _UpdatePostState extends State<UpdatePost> {
   Widget buildImage() {
     return Container(
       child: Image.file(
-        imagefile,
+        imageFile,
         width: MediaQuery.of(context).size.width,
         height: 240,
         fit: BoxFit.fitWidth,
@@ -338,10 +330,10 @@ class _UpdatePostState extends State<UpdatePost> {
 
   void getImageGallery() async {
     try {
-      imagefile = await ImagePicker.pickImage(source: ImageSource.gallery);
-      print('imageFile : $imagefile');
+      imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+      print('imageFile : $imageFile');
       setState(() {
-        image = imagefile;
+        image = imageFile;
         isChanged = true;
       });
     } catch (e) {
@@ -351,10 +343,10 @@ class _UpdatePostState extends State<UpdatePost> {
 
   void getImageCamera() async {
     try {
-      imagefile = await ImagePicker.pickImage(source: ImageSource.camera);
-      print('imageFile : $imagefile');
+      imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+      print('imageFile : $imageFile');
       setState(() {
-        image = imagefile;
+        image = imageFile;
         isChanged = true;
       });
     } catch (e) {
@@ -373,36 +365,31 @@ class _UpdatePostState extends State<UpdatePost> {
     return _url;
   }
 
-//  void update(Person person) {
-//    setState(() {
-//      databaseUtil.updateUser(person);
-//    });
-//  }
-
-  void UpdatePost() async {
+  void updatePost() async {
     print('Mencoba Update Posting');
 
     if (isChanged == true) {
       uploadImage(image).then((_url) {
         pushData(_url);
       });
-    }else pushData(widget.person.photo);
+    } else
+      pushData(widget.person.photo);
   }
 
   bool validateAndSave() {
-    final form = formkey.currentState;
-    print('Form Key : $formkey');
+    final form = formKey.currentState;
+    print('Form Key : $formKey');
     print('Form ' + form.toString());
     form.save();
     print('Nama $nama');
     print('Umur $umur');
     print('Alamat $alamat');
     print('Keterangan $keterangan');
-    print('tanggal meninggal $t_meninggal');
-    print('tanggal disemayamkan $t_semayam');
-    print('tempat disemayamkan $tempat_dimakamkan');
-    print('jam kre $wkt_semayam');
-    print('status pemakaman : $_processType.toString()');
+    print('tanggal meninggal $tempatMeninggal');
+    print('tanggal disemayamkan $tempatSemayam');
+    print('tempat disemayamkan $tempatMakam');
+    print('jam kre $waktuSemayam');
+    print('status pemakaman : ${_processType.toString()}');
 
     if (form.validate()) {
       print('Posting valid');
@@ -417,12 +404,12 @@ class _UpdatePostState extends State<UpdatePost> {
     if (validateAndSave()) {
       try {
         FirebaseUser user = await FirebaseAuth.instance.currentUser();
-        UpdatePost();
+        updatePost();
       } catch (e) {
         print('Error $e');
       }
     } else {
-      formkey.currentState.reset();
+      formKey.currentState.reset();
     }
   }
 
@@ -438,10 +425,10 @@ class _UpdatePostState extends State<UpdatePost> {
         'tanggal_meninggal': tanggal_meninggal.toString(),
         'alamat': alamat,
         'status_pemakaman': _processType.toString(),
-        'tempat_dimakamkan': tempat_dimakamkan,
+        'tempat_dimakamkan': tempatMakam,
         'tanggal_semayam': tanggal_semayam.toString(),
         'lokasi_semayam': lokasi_disemayamkan,
-        'waktu_semayam': wkt_semayam.toString(),
+        'waktu_semayam': waktuSemayam.toString(),
         'keterangan': keterangan
       }).whenComplete(() {
         print('Updating selesai.......');
