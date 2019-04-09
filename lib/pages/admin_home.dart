@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   void _onPostAdded(Event event) {
     print('Berita ditampilkan');
     post = new Person.fromsnapShot(event.snapshot);
+    print(post);
     setState(() {
       postlist.add(post);
     });

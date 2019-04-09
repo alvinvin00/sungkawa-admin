@@ -57,7 +57,7 @@ class Person {
   int get timestamp => _timestamp;
 
   Person.fromsnapShot(DataSnapshot snapshot) {
-    _key = snapshot.key;
+    _key = snapshot.value["key"];
     _nama = snapshot.value["nama"];
     _umur = snapshot.value["usia"];
     _photo = snapshot.value['photo'];

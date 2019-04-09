@@ -32,18 +32,18 @@ class _UpdatePostState extends State<UpdatePost> {
       tanggal_semayam,
       waktu_semayam;
   bool isChanged = false;
-  String key;
   var postRef;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    postRef = FirebaseDatabase.instance.reference().child('posts').child(key);
-    key = widget.person.key;
-    print(key);
+    postRef = FirebaseDatabase.instance
+        .reference()
+        .child('posts')
+        .child(widget.person.key);
     _processType = widget.person.statusPemakaman;
-    tempatSemayam = dateFormat.parse(widget.person.tanggalSemayam);
+    tanggalSemayam = dateFormat.parse(widget.person.tanggalSemayam);
     tempatMeninggal = dateFormat.parse(widget.person.tanggalMeninggal);
     waktuSemayam = timeFormat.parse(widget.person.waktuSemayam);
     nama = widget.person.nama;
@@ -53,7 +53,7 @@ class _UpdatePostState extends State<UpdatePost> {
     print(waktuSemayam);
   }
 
-  DateTime tempatSemayam, waktuSemayam, tempatMeninggal;
+  DateTime tanggalSemayam, waktuSemayam, tempatMeninggal;
 
   var radioValue;
   DateTime date, time;
@@ -63,7 +63,7 @@ class _UpdatePostState extends State<UpdatePost> {
   bool isLoading = false;
   String kubur;
   final dateFormat = DateFormat('dd/MM/yyyy');
-  final timeFormat = DateFormat('hh.mm.a');
+  final timeFormat = DateFormat('hh:mm a');
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -89,11 +89,14 @@ class _UpdatePostState extends State<UpdatePost> {
           key: formKey,
           child: new ListView(
             children: <Widget>[
-              CachedNetworkImage(
-                imageUrl: widget.person.photo,
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Icon(Icons.warning),
-              ),
+              isChanged == false
+                  ? CachedNetworkImage(
+                      imageUrl: widget.person.photo,
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.warning),
+                    )
+                  : buildImage(),
               SizedBox(
                 height: 5,
               ),
@@ -255,8 +258,8 @@ class _UpdatePostState extends State<UpdatePost> {
                 inputType: InputType.date,
                 editable: false,
                 format: dateFormat,
-                initialValue: tempatSemayam,
-                onSaved: (value) => tempatSemayam = value,
+                initialValue: tanggalSemayam,
+                onSaved: (value) => tanggalSemayam = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Pemakaman/Kremasi',
                   border: OutlineInputBorder(
@@ -302,7 +305,6 @@ class _UpdatePostState extends State<UpdatePost> {
                 onSaved: (value) => keterangan = value,
                 textCapitalization: TextCapitalization.sentences,
               ),
-              imageFile != null ? buildImage() : Text(''),
             ],
           ),
         ),
@@ -378,18 +380,8 @@ class _UpdatePostState extends State<UpdatePost> {
 
   bool validateAndSave() {
     final form = formKey.currentState;
-    print('Form Key : $formKey');
-    print('Form ' + form.toString());
+
     form.save();
-    print('Nama $nama');
-    print('Umur $umur');
-    print('Alamat $alamat');
-    print('Keterangan $keterangan');
-    print('tanggal meninggal $tempatMeninggal');
-    print('tanggal disemayamkan $tempatSemayam');
-    print('tempat disemayamkan $tempatMakam');
-    print('jam kre $waktuSemayam');
-    print('status pemakaman : ${_processType.toString()}');
 
     if (form.validate()) {
       print('Posting valid');
@@ -417,6 +409,7 @@ class _UpdatePostState extends State<UpdatePost> {
     try {
       print('Updating ....');
       postRef.update({
+        'key': widget.person.key,
         'nama': nama,
         'usia': umur,
         'photo': _url,

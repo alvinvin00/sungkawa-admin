@@ -91,7 +91,7 @@ class _DetailState extends State<Detail> {
                         ' di ' +
                         widget.person.tempatMakam +
                         ' pada ' +
-                        widget.person.waktuSemayam +
+                        widget.person.tanggalSemayam +
                         ' pukul ' +
                         widget.person.waktuSemayam,
                     style: TextStyle(fontSize: 16.0),

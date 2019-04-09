@@ -332,6 +332,7 @@ class _PostAddState extends State<PostAdd> {
         try {
           print('Posting ....');
           postRef.push().set({
+            'key': postRef.key,
             'nama': namaController.text,
             'usia': umurController.text,
             'photo': _url,
