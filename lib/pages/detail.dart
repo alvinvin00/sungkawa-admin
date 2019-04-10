@@ -87,7 +87,7 @@ class _DetailState extends State<Detail> {
                     color: Colors.green,
                   ),
                   Text(
-                    widget.person.statusPemakaman +
+                    widget.person.prosesi +
                         ' di ' +
                         widget.person.tempatMakam +
                         ' pada ' +

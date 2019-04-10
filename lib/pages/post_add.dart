@@ -23,24 +23,23 @@ class _PostAddState extends State<PostAdd> {
   final namaController = TextEditingController();
   final umurController = TextEditingController();
   final alamatController = TextEditingController();
-  final locationController = TextEditingController();
-  final tanggalmeninggalController = TextEditingController();
-  final lokasi_semayamController = TextEditingController();
-  final keluarga = TextEditingController();
+  final tempatProsesiController = TextEditingController();
+  final tanggalMeninggalController = TextEditingController();
+  final tempatSemayamController = TextEditingController();
+  final keluargaController = TextEditingController();
   final tempatsemyamController = TextEditingController();
   final keteranganController = TextEditingController();
-  final tanggal_semayam = TextEditingController();
+  final tanggalProsesi = TextEditingController();
   final tempat_dikebumikan = TextEditingController();
-  final waktu_semayamController = TextEditingController();
+  final waktuSemayamController = TextEditingController();
   final dateformat = DateFormat('dd/MM/yyyy');
-  final formats = DateFormat("EEEE, MMMM d, yyyy 'at' h:mma");
   final timeformat = DateFormat('hh:mm a');
   DateTime TanggalMeninggal ;
   DateTime TanggalSemayam;
-  DateTime waktu_semayam;
+  DateTime waktuSemayam;
 
   File image;
-  var imagefile, _processType;
+  var imagefile, _prosesi;
   bool isLoading = false;
   String kubur;
 
@@ -115,14 +114,14 @@ class _PostAddState extends State<PostAdd> {
                 inputType: InputType.date,
                 editable: false,
                 format: dateformat,
-                controller: tanggalmeninggalController,
+                controller: tanggalMeninggalController,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Meninggal',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                onChanged: (dt) => setState(() => date = dt),
+                onChanged: (value) => setState(() => date = value),
               ),
               SizedBox(
                 height: 10.0,
@@ -147,9 +146,9 @@ class _PostAddState extends State<PostAdd> {
                   ),
                   new Radio(
                     value: 'Dimakamkan',
-                    onChanged: handleProcessType,
+                    onChanged: handleProsesi,
                     activeColor: Colors.green,
-                    groupValue: _processType,
+                    groupValue: _prosesi,
                   ),
                   Text('Dimakamkan'),
                   SizedBox(
@@ -157,9 +156,9 @@ class _PostAddState extends State<PostAdd> {
                   ),
                   new Radio(
                     value: 'Dikremasi',
-                    onChanged: handleProcessType,
+                    onChanged: handleProsesi,
                     activeColor: Colors.green,
-                    groupValue: _processType,
+                    groupValue: _prosesi,
                   ),
                   Text('Dikremasi'),
                 ],
@@ -179,7 +178,7 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                controller: lokasi_semayamController,
+                controller: tempatSemayamController,
                 textCapitalization: TextCapitalization.words,
               ),
               TextField(
@@ -192,14 +191,14 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                controller: locationController,
+                controller: tempatProsesiController,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
                 inputType: InputType.date,
                 editable: false,
                 format: dateformat,
-                controller: tanggal_semayam,
+                controller: tanggalProsesi,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Pemakaman/Kremasi',
                   border: OutlineInputBorder(
@@ -215,7 +214,7 @@ class _PostAddState extends State<PostAdd> {
                 inputType: InputType.time,
                 editable: false,
                 format: timeformat,
-                controller: waktu_semayamController,
+                controller: waktuSemayamController,
                 decoration: InputDecoration(
                   labelText: 'Jam Pemakaman/Kremasi',
                   border: OutlineInputBorder(
@@ -332,19 +331,18 @@ class _PostAddState extends State<PostAdd> {
         try {
           print('Posting ....');
           postRef.push().set({
-            'key': postRef.key,
             'nama': namaController.text,
             'usia': umurController.text,
             'photo': _url,
             'timestamp': timestamp,
             'userId': userId,
-            'tanggal_meninggal': tanggalmeninggalController.text,
+            'tanggaMmeninggal': tanggalMeninggalController.text,
             'alamat': alamatController.text,
-            'status_pemakaman': _processType.toString(),
-            'tempat_dimakamkan': locationController.text,
-            'tanggal_semayam': tanggal_semayam.text,
-            'lokasi_semayam': lokasi_semayamController.text,
-            'waktu_semayam': waktu_semayamController.text,
+            'prosesi': _prosesi.toString(),
+            'tempatDimakamkan': tempatProsesiController.text,
+            'tanggalSemayam': tanggalProsesi.text,
+            'lokasiSemayam': tempatSemayamController.text,
+            'waktuSemayam': waktuSemayamController.text,
             'keterangan': keteranganController.text
 
           }).whenComplete(() {
@@ -352,14 +350,14 @@ class _PostAddState extends State<PostAdd> {
             Navigator.pop(context,
                 MaterialPageRoute(builder: (context) => DashboardScreen()));
             namaController.clear();
-            locationController.clear();
+            tempatProsesiController.clear();
             alamatController.clear();
-            waktu_semayamController.clear();
+            waktuSemayamController.clear();
             keteranganController.clear();
-            tanggalmeninggalController.clear();
+            tanggalMeninggalController.clear();
             umurController.clear();
-            tanggalmeninggalController.clear();
-            lokasi_semayamController.clear();
+            tanggalMeninggalController.clear();
+            tempatSemayamController.clear();
           });
         } catch (e) {
           print('error : $e');
@@ -371,10 +369,10 @@ class _PostAddState extends State<PostAdd> {
     }
   }
 
-  void handleProcessType(value) {
+  void handleProsesi(value) {
     print('Process type : $value');
     setState(() {
-      _processType = value;
+      _prosesi = value;
 
     });
   }
@@ -383,6 +381,6 @@ class _PostAddState extends State<PostAdd> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _processType = 'Dimakamkan';
+    _prosesi = 'Dimakamkan';
   }
 }

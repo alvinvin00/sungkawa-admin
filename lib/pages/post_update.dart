@@ -25,12 +25,13 @@ class _UpdatePostState extends State<UpdatePost> {
   String nama,
       umur,
       alamat,
-      lokasi_disemayamkan,
-      tanggal_meninggal,
+      lokasiSemayam,
       keterangan,
       tempatMakam,
-      tanggal_semayam,
       waktu_semayam;
+  final tanggalMeninggalController = TextEditingController();
+  final tanggalSemayamController = TextEditingController();
+  final waktuSemayamController = TextEditingController();
   bool isChanged = false;
   var postRef;
 
@@ -42,24 +43,25 @@ class _UpdatePostState extends State<UpdatePost> {
         .reference()
         .child('posts')
         .child(widget.person.key);
-    _processType = widget.person.statusPemakaman;
+    _prosesi = widget.person.prosesi;
     tanggalSemayam = dateFormat.parse(widget.person.tanggalSemayam);
-    tempatMeninggal = dateFormat.parse(widget.person.tanggalMeninggal);
+    tanggalMeninggal = dateFormat.parse(widget.person.tanggalMeninggal);
     waktuSemayam = timeFormat.parse(widget.person.waktuSemayam);
     nama = widget.person.nama;
     umur = widget.person.umur;
     alamat = widget.person.alamat;
+    userId = widget.person.userId;
     keterangan = widget.person.keterangan;
     print(waktuSemayam);
   }
 
-  DateTime tanggalSemayam, waktuSemayam, tempatMeninggal;
+  DateTime tanggalSemayam, waktuSemayam, tanggalMeninggal;
 
   var radioValue;
   DateTime date, time;
   int timestamp;
   File image;
-  var imageFile, _processType;
+  var imageFile, _prosesi;
   bool isLoading = false;
   String kubur;
   final dateFormat = DateFormat('dd/MM/yyyy');
@@ -162,18 +164,18 @@ class _UpdatePostState extends State<UpdatePost> {
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
-                initialValue: tempatMeninggal,
+                initialValue: tanggalMeninggal,
                 inputType: InputType.date,
                 editable: false,
                 format: dateFormat,
-                onSaved: (value) => tempatMeninggal = value,
+                controller: tanggalMeninggalController,
+                onSaved: (value) => tanggalMeninggal = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Meninggal',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-//              onChanged: (dt) => setState(() => date = dt),
               ),
               SizedBox(
                 height: 10.0,
@@ -201,9 +203,9 @@ class _UpdatePostState extends State<UpdatePost> {
                   ),
                   new Radio(
                     value: 'Dimakamkan',
-                    onChanged: handleProcessType,
+                    onChanged: handleProsesi,
                     activeColor: Colors.green,
-                    groupValue: _processType,
+                    groupValue: _prosesi,
                   ),
                   Text('Dimakamkan'),
                   SizedBox(
@@ -211,9 +213,9 @@ class _UpdatePostState extends State<UpdatePost> {
                   ),
                   new Radio(
                     value: 'Dikremasi',
-                    onChanged: handleProcessType,
+                    onChanged: handleProsesi,
                     activeColor: Colors.green,
-                    groupValue: _processType,
+                    groupValue: _prosesi,
                   ),
                   Text('Dikremasi'),
                 ],
@@ -234,7 +236,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onSaved: (value) => lokasi_disemayamkan = value,
+                onSaved: (value) => lokasiSemayam = value,
                 textCapitalization: TextCapitalization.words,
               ),
               TextFormField(
@@ -259,6 +261,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 editable: false,
                 format: dateFormat,
                 initialValue: tanggalSemayam,
+                controller: tanggalSemayamController,
                 onSaved: (value) => tanggalSemayam = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Pemakaman/Kremasi',
@@ -275,6 +278,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 inputType: InputType.time,
                 editable: false,
                 format: timeFormat,
+                controller: waktuSemayamController,
                 initialValue: waktuSemayam,
                 onSaved: (value) => waktuSemayam = value,
                 decoration: InputDecoration(
@@ -283,7 +287,6 @@ class _UpdatePostState extends State<UpdatePost> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-//              onChanged: (dt) => setState(() => time = dt),
               ),
               SizedBox(
                 height: 10.0,
@@ -312,10 +315,10 @@ class _UpdatePostState extends State<UpdatePost> {
     );
   }
 
-  void handleProcessType(value) {
+  void handleProsesi(value) {
     print('Process type : $value');
     setState(() {
-      _processType = value;
+      _prosesi = value;
     });
   }
 
@@ -357,7 +360,6 @@ class _UpdatePostState extends State<UpdatePost> {
   }
 
   Future<String> uploadImage(var imageFile) async {
-    timestamp = DateTime.now().millisecondsSinceEpoch;
     String fileName = timestamp.toString() + 'jpg';
     StorageReference storageRef =
         FirebaseStorage.instance.ref().child('image').child(fileName);
@@ -369,6 +371,7 @@ class _UpdatePostState extends State<UpdatePost> {
 
   void updatePost() async {
     print('Mencoba Update Posting');
+    timestamp = DateTime.now().millisecondsSinceEpoch;
 
     if (isChanged == true) {
       uploadImage(image).then((_url) {
@@ -409,19 +412,18 @@ class _UpdatePostState extends State<UpdatePost> {
     try {
       print('Updating ....');
       postRef.update({
-        'key': widget.person.key,
         'nama': nama,
         'usia': umur,
         'photo': _url,
         'timestamp': timestamp,
         'userId': userId,
-        'tanggal_meninggal': tanggal_meninggal.toString(),
+        'tanggalMeninggal': tanggalMeninggalController.text,
         'alamat': alamat,
-        'status_pemakaman': _processType.toString(),
-        'tempat_dimakamkan': tempatMakam,
-        'tanggal_semayam': tanggal_semayam.toString(),
-        'lokasi_semayam': lokasi_disemayamkan,
-        'waktu_semayam': waktuSemayam.toString(),
+        'prosesi': _prosesi.toString(),
+        'tempatDimakamkan': tempatMakam,
+        'tanggalSemayam': tanggalSemayamController.text,
+        'lokasiSemayam': lokasiSemayam,
+        'waktuSemayam': waktuSemayamController.text,
         'keterangan': keterangan
       }).whenComplete(() {
         print('Updating selesai.......');

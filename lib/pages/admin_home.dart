@@ -65,6 +65,7 @@ class _HomePageState extends State<HomePage> {
     onPostChangedSubscription = postref.onChildChanged.listen(_onPostChanged);
   }
 
+
   @override
   void dispose() {
     // TODO: implement dispose

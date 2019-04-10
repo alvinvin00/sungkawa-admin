@@ -4,6 +4,7 @@ class Person {
   String _key;
   String _photo;
   String _nama,
+      _userId,
       _tempatMakam,
       _umur,
       _keterangan,
@@ -11,15 +12,16 @@ class Person {
       _lokasi,
       _alamat,
       _tanggalMeninggal,
-      _statusPemakaman,
+      _prosesi,
       _waktuSemayam;
   int _timestamp;
 
   Person(
+      this._userId,
       this._key,
       this._photo,
       this._alamat,
-      this._statusPemakaman,
+      this._prosesi,
       this._nama,
       this._tempatMakam,
       this._umur,
@@ -31,6 +33,8 @@ class Person {
       this._timestamp);
 
   String get key => _key;
+
+  String get userId => _userId;
 
   String get photo => _photo;
 
@@ -50,20 +54,21 @@ class Person {
 
   get tanggalMeninggal => _tanggalMeninggal;
 
-  get statusPemakaman => _statusPemakaman;
+  get prosesi => _prosesi;
 
   get waktuSemayam => _waktuSemayam;
 
   int get timestamp => _timestamp;
 
   Person.fromsnapShot(DataSnapshot snapshot) {
-    _key = snapshot.value["key"];
+    _key = snapshot.key;
+    _userId = snapshot.value["userId"];
     _nama = snapshot.value["nama"];
     _umur = snapshot.value["usia"];
     _photo = snapshot.value['photo'];
     _alamat = snapshot.value['alamat'];
     _tanggalMeninggal = snapshot.value["tanggal_meninggal"];
-    _statusPemakaman = snapshot.value["status_pemakaman"];
+    _prosesi = snapshot.value["prosesi"];
     _lokasi = snapshot.value["lokasi_semayam"];
     _tempatMakam = snapshot.value["tempat_dimakamkan"];
     _tanggalSemayam = snapshot.value["tanggal_semayam"];
