@@ -22,7 +22,8 @@ class _HomePageState extends State<HomePage> {
   var nama, umur, lokasi, semayam, keluarga, post;
 
   List<Person> postlist = new List();
-
+  final GlobalKey<RefreshIndicatorState> _refreshPageKey =
+      new GlobalKey<RefreshIndicatorState>();
 
   final namaController = TextEditingController();
   final umurController = TextEditingController();
@@ -64,7 +65,6 @@ class _HomePageState extends State<HomePage> {
     onPostAddedSubscription = postref.onChildAdded.listen(_onPostAdded);
     onPostChangedSubscription = postref.onChildChanged.listen(_onPostChanged);
   }
-
 
   @override
   void dispose() {
@@ -147,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                               bottom: 10.0,
                             ),
                             child: Text(
-                              postlist[index].umur + ' tahun',
+                              postlist[index].usia + ' tahun',
                               style: TextStyle(
                                 fontSize: 14.0,
                                 color: Colors.grey,

@@ -336,7 +336,7 @@ class _PostAddState extends State<PostAdd> {
             'photo': _url,
             'timestamp': timestamp,
             'userId': userId,
-            'tanggaMmeninggal': tanggalMeninggalController.text,
+            'tanggalMeninggal': tanggalMeninggalController.text,
             'alamat': alamatController.text,
             'prosesi': _prosesi.toString(),
             'tempatDimakamkan': tempatProsesiController.text,

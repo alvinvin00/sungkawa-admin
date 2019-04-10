@@ -22,13 +22,7 @@ class UpdatePost extends StatefulWidget {
 
 class _UpdatePostState extends State<UpdatePost> {
   String userId;
-  String nama,
-      umur,
-      alamat,
-      lokasiSemayam,
-      keterangan,
-      tempatMakam,
-      waktu_semayam;
+  String nama, umur, alamat, lokasiSemayam, keterangan, tempatMakam;
   final tanggalMeninggalController = TextEditingController();
   final tanggalSemayamController = TextEditingController();
   final waktuSemayamController = TextEditingController();
@@ -39,6 +33,12 @@ class _UpdatePostState extends State<UpdatePost> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    print({
+      'tanggalSemayam : ${widget.person.tanggalSemayam}',
+      'tanggalMeninggal : ${widget.person.tanggalMeninggal}',
+      'waktuSemayam : ${widget.person.waktuSemayam}'
+    });
+
     postRef = FirebaseDatabase.instance
         .reference()
         .child('posts')
@@ -48,11 +48,10 @@ class _UpdatePostState extends State<UpdatePost> {
     tanggalMeninggal = dateFormat.parse(widget.person.tanggalMeninggal);
     waktuSemayam = timeFormat.parse(widget.person.waktuSemayam);
     nama = widget.person.nama;
-    umur = widget.person.umur;
+    umur = widget.person.usia;
     alamat = widget.person.alamat;
     userId = widget.person.userId;
     keterangan = widget.person.keterangan;
-    print(waktuSemayam);
   }
 
   DateTime tanggalSemayam, waktuSemayam, tanggalMeninggal;

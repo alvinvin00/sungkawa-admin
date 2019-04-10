@@ -6,14 +6,14 @@ class Person {
   String _nama,
       _userId,
       _tempatMakam,
-      _umur,
       _keterangan,
       _tanggalSemayam,
       _lokasi,
       _alamat,
       _tanggalMeninggal,
       _prosesi,
-      _waktuSemayam;
+      _waktuSemayam,
+      _usia;
   int _timestamp;
 
   Person(
@@ -24,7 +24,7 @@ class Person {
       this._prosesi,
       this._nama,
       this._tempatMakam,
-      this._umur,
+      this._usia,
       this._keterangan,
       this._tanggalSemayam,
       this._lokasi,
@@ -40,23 +40,23 @@ class Person {
 
   String get nama => _nama;
 
-  get tempatMakam => _tempatMakam;
+  String get tempatMakam => _tempatMakam;
 
-  get umur => _umur;
+  String get usia => _usia;
 
-  get keterangan => _keterangan;
+  String get keterangan => _keterangan;
 
-  get tanggalSemayam => _tanggalSemayam;
+  String get tanggalSemayam => _tanggalSemayam;
 
-  get lokasi => _lokasi;
+  String get lokasi => _lokasi;
 
-  get alamat => _alamat;
+  String get alamat => _alamat;
 
-  get tanggalMeninggal => _tanggalMeninggal;
+  String get tanggalMeninggal => _tanggalMeninggal;
 
-  get prosesi => _prosesi;
+  String get prosesi => _prosesi;
 
-  get waktuSemayam => _waktuSemayam;
+  String get waktuSemayam => _waktuSemayam;
 
   int get timestamp => _timestamp;
 
@@ -64,7 +64,7 @@ class Person {
     _key = snapshot.key;
     _userId = snapshot.value["userId"];
     _nama = snapshot.value["nama"];
-    _umur = snapshot.value["usia"];
+    _usia = snapshot.value["usia"];
     _photo = snapshot.value['photo'];
     _alamat = snapshot.value['alamat'];
     _tanggalMeninggal = snapshot.value["tanggal_meninggal"];
