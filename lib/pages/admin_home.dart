@@ -74,7 +74,11 @@ class _HomePageState extends State<HomePage> {
     onPostAddedSubscription.cancel();
     onPostChangedSubscription.cancel();
   }
-
+@override
+  void didUpdateWidget(HomePage oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -99,11 +103,11 @@ class _HomePageState extends State<HomePage> {
                     },
                     onLongPress: () {
                       print('Buka update');
-                      Person siperson = postlist[index];
+                      Person person = postlist[index];
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => UpdatePost(siperson)));
+                              builder: (context) => UpdatePost(person)));
                     },
                     child: Card(
                       shape: RoundedRectangleBorder(

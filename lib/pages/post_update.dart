@@ -23,9 +23,7 @@ class UpdatePost extends StatefulWidget {
 class _UpdatePostState extends State<UpdatePost> {
   String userId;
   String nama, umur, alamat, lokasiSemayam, keterangan, tempatMakam;
-  final tanggalMeninggalController = TextEditingController();
-  final tanggalSemayamController = TextEditingController();
-  final waktuSemayamController = TextEditingController();
+
   bool isChanged = false;
   var postRef;
 
@@ -33,11 +31,11 @@ class _UpdatePostState extends State<UpdatePost> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print({
-      'tanggalSemayam : ${widget.person.tanggalSemayam}',
-      'tanggalMeninggal : ${widget.person.tanggalMeninggal}',
-      'waktuSemayam : ${widget.person.waktuSemayam}'
-    });
+//    print({
+//      'tanggalSemayam : ${widget.person.tanggalSemayam}',
+//      'tanggalMeninggal : ${widget.person.tanggalMeninggal}',
+//      'waktuSemayam : ${widget.person.waktuSemayam}'
+//    });
 
     postRef = FirebaseDatabase.instance
         .reference()
@@ -167,7 +165,6 @@ class _UpdatePostState extends State<UpdatePost> {
                 inputType: InputType.date,
                 editable: false,
                 format: dateFormat,
-                controller: tanggalMeninggalController,
                 onSaved: (value) => tanggalMeninggal = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Meninggal',
@@ -223,7 +220,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 height: 8.0,
               ),
               TextFormField(
-                initialValue: widget.person.lokasi,
+                initialValue: widget.person.lokasiSemayam,
                 validator: (value) =>
                     value.isEmpty ? 'Lokasi tidak boleh kosong' : null,
                 decoration: InputDecoration(
@@ -260,7 +257,6 @@ class _UpdatePostState extends State<UpdatePost> {
                 editable: false,
                 format: dateFormat,
                 initialValue: tanggalSemayam,
-                controller: tanggalSemayamController,
                 onSaved: (value) => tanggalSemayam = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Pemakaman/Kremasi',
@@ -277,7 +273,6 @@ class _UpdatePostState extends State<UpdatePost> {
                 inputType: InputType.time,
                 editable: false,
                 format: timeFormat,
-                controller: waktuSemayamController,
                 initialValue: waktuSemayam,
                 onSaved: (value) => waktuSemayam = value,
                 decoration: InputDecoration(
@@ -416,13 +411,13 @@ class _UpdatePostState extends State<UpdatePost> {
         'photo': _url,
         'timestamp': timestamp,
         'userId': userId,
-        'tanggalMeninggal': tanggalMeninggalController.text,
+        'tanggalMeninggal': tanggalMeninggal,
         'alamat': alamat,
         'prosesi': _prosesi.toString(),
         'tempatDimakamkan': tempatMakam,
-        'tanggalSemayam': tanggalSemayamController.text,
+        'tanggalSemayam': tanggalSemayam,
         'lokasiSemayam': lokasiSemayam,
-        'waktuSemayam': waktuSemayamController.text,
+        'waktuSemayam': waktuSemayam,
         'keterangan': keterangan
       }).whenComplete(() {
         print('Updating selesai.......');

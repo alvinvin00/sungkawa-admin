@@ -8,7 +8,7 @@ class Person {
       _tempatMakam,
       _keterangan,
       _tanggalSemayam,
-      _lokasi,
+      _lokasiSemayam,
       _alamat,
       _tanggalMeninggal,
       _prosesi,
@@ -27,7 +27,7 @@ class Person {
       this._usia,
       this._keterangan,
       this._tanggalSemayam,
-      this._lokasi,
+      this._lokasiSemayam,
       this._tanggalMeninggal,
       this._waktuSemayam,
       this._timestamp);
@@ -48,7 +48,7 @@ class Person {
 
   String get tanggalSemayam => _tanggalSemayam;
 
-  String get lokasi => _lokasi;
+  String get lokasiSemayam => _lokasiSemayam;
 
   String get alamat => _alamat;
 
@@ -67,12 +67,12 @@ class Person {
     _usia = snapshot.value["usia"];
     _photo = snapshot.value['photo'];
     _alamat = snapshot.value['alamat'];
-    _tanggalMeninggal = snapshot.value["tanggal_meninggal"];
+    _tanggalMeninggal = snapshot.value["tanggalMeninggal"];
     _prosesi = snapshot.value["prosesi"];
-    _lokasi = snapshot.value["lokasi_semayam"];
+    _lokasiSemayam = snapshot.value["lokasi_semayam"];
     _tempatMakam = snapshot.value["tempat_dimakamkan"];
-    _tanggalSemayam = snapshot.value["tanggal_semayam"];
-    _waktuSemayam = snapshot.value["waktu_semayam"];
+    _tanggalSemayam = snapshot.value["tanggalSemayam"];
+    _waktuSemayam = snapshot.value["waktuSemayam"];
     _keterangan = snapshot.value["keterangan"];
     _timestamp = snapshot.value['timestamp'];
   }

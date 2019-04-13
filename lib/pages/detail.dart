@@ -76,7 +76,7 @@ class _DetailState extends State<Detail> {
                     color: Colors.green,
                   ),
                   Text(
-                    'Disemayamkan di ' + widget.person.lokasi,
+                    'Disemayamkan di ' + widget.person.lokasiSemayam,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
