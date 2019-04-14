@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 class Utilities {
   String convertTimestamp(int timestamp) {
     var now = new DateTime.now();
-    var format = new DateFormat('HH:mm a');
+    var format = new DateFormat('HH:mm');
     var date = new DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000);
     var difer = date.difference(now);
     var time = '';

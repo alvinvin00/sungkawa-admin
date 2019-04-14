@@ -70,15 +70,19 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-//    databaseUtil.dispose();
     onPostAddedSubscription.cancel();
     onPostChangedSubscription.cancel();
   }
-@override
+
+  @override
   void didUpdateWidget(HomePage oldWidget) {
     // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
+    postlist.clear();
+    onPostAddedSubscription = postref.onChildAdded.listen(_onPostAdded);
+    onPostChangedSubscription = postref.onChildChanged.listen(_onPostChanged);
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -21,7 +21,7 @@ class UpdatePost extends StatefulWidget {
 }
 
 class _UpdatePostState extends State<UpdatePost> {
-  String userId, nama, umur, alamat, lokasiSemayam, keterangan, tempatMakam;
+  String userId, nama, usia, alamat, lokasiSemayam, keterangan, tempatMakam;
 
   bool isChanged = false;
   var postRef;
@@ -41,25 +41,27 @@ class _UpdatePostState extends State<UpdatePost> {
         .child('posts')
         .child(widget.person.key);
     _prosesi = widget.person.prosesi;
+
     tanggalSemayam = dateFormat.parse(widget.person.tanggalSemayam);
     tanggalMeninggal = dateFormat.parse(widget.person.tanggalMeninggal);
     waktuSemayam = timeFormat.parse(widget.person.waktuSemayam);
+
     nama = widget.person.nama;
-    umur = widget.person.usia;
+    usia = widget.person.usia;
     alamat = widget.person.alamat;
     userId = widget.person.userId;
     keterangan = widget.person.keterangan;
+    lokasiSemayam = widget.person.lokasiSemayam;
+    tempatMakam = widget.person.tempatMakam;
   }
 
   DateTime tanggalSemayam, waktuSemayam, tanggalMeninggal;
 
   var radioValue;
-  DateTime date, time;
   int timestamp;
   File image;
   var imageFile, _prosesi;
   bool isLoading = false;
-  String kubur;
   final dateFormat = DateFormat('dd/MM/yyyy');
   final timeFormat = DateFormat('hh:mm a');
   final formKey = GlobalKey<FormState>();
@@ -142,10 +144,10 @@ class _UpdatePostState extends State<UpdatePost> {
                 textCapitalization: TextCapitalization.words,
               ),
               TextFormField(
-                initialValue: umur,
+                initialValue: usia,
                 validator: (value) =>
                     value.isEmpty ? 'Umur tidak boleh kosong' : null,
-                onSaved: (value) => umur = value,
+                onSaved: (value) => usia = value,
                 decoration: InputDecoration(
                   labelText: 'Usia',
                   hintText: 'Tulis usia dalam satuan tahun',
@@ -219,7 +221,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 height: 8.0,
               ),
               TextFormField(
-                initialValue: widget.person.lokasiSemayam,
+                initialValue: lokasiSemayam,
                 validator: (value) =>
                     value.isEmpty ? 'Lokasi tidak boleh kosong' : null,
                 decoration: InputDecoration(
@@ -235,7 +237,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 textCapitalization: TextCapitalization.words,
               ),
               TextFormField(
-                initialValue: widget.person.tempatMakam,
+                initialValue: tempatMakam,
                 validator: (value) => value.isEmpty
                     ? 'Tempat dimakamkan tidak boleh kosong'
                     : null,
@@ -263,7 +265,6 @@ class _UpdatePostState extends State<UpdatePost> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-//              onChanged: (dt) => setState(() => date = dt),
               ),
               SizedBox(
                 height: 10.0,
@@ -285,7 +286,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 height: 10.0,
               ),
               TextFormField(
-                initialValue: widget.person.keterangan,
+                initialValue: keterangan,
                 validator: (value) =>
                     value.isEmpty ? 'Keterangan tidak boleh kosong' : null,
                 decoration: InputDecoration(
@@ -391,7 +392,6 @@ class _UpdatePostState extends State<UpdatePost> {
   void validateAndSubmit() async {
     if (validateAndSave()) {
       try {
-        FirebaseUser user = await FirebaseAuth.instance.currentUser();
         updatePost();
       } catch (e) {
         print('Error $e');
@@ -406,17 +406,17 @@ class _UpdatePostState extends State<UpdatePost> {
       print('Updating ....');
       postRef.update({
         'nama': nama,
-        'usia': umur,
+        'usia': usia,
         'photo': _url,
         'timestamp': timestamp,
         'userId': userId,
-        'tanggalMeninggal': tanggalMeninggal,
+        'tanggalMeninggal': dateFormat.format(tanggalMeninggal),
         'alamat': alamat,
         'prosesi': _prosesi.toString(),
         'tempatMakam': tempatMakam,
-        'tanggalSemayam': tanggalSemayam,
+        'tanggalSemayam': dateFormat.format(tanggalSemayam),
         'lokasiSemayam': lokasiSemayam,
-        'waktuSemayam': waktuSemayam,
+        'waktuSemayam': timeFormat.format(waktuSemayam),
         'keterangan': keterangan
       }).whenComplete(() {
         print('Updating selesai.......');

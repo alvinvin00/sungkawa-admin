@@ -70,7 +70,7 @@ class Person {
     _tanggalMeninggal = snapshot.value["tanggalMeninggal"];
     _prosesi = snapshot.value["prosesi"];
     _lokasiSemayam = snapshot.value["lokasiSemayam"];
-    _tempatMakam = snapshot.value["tempatDimakamkan"];
+    _tempatMakam = snapshot.value["tempatMakam"];
     _tanggalSemayam = snapshot.value["tanggalSemayam"];
     _waktuSemayam = snapshot.value["waktuSemayam"];
     _keterangan = snapshot.value["keterangan"];
