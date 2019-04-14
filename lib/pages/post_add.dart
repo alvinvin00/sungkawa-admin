@@ -29,14 +29,15 @@ class _PostAddState extends State<PostAdd> {
   final keluargaController = TextEditingController();
   final tempatsemyamController = TextEditingController();
   final keteranganController = TextEditingController();
-  final tanggalProsesi = TextEditingController();
-  final tempat_dikebumikan = TextEditingController();
+  final tanggalProsesiController = TextEditingController();
   final waktuSemayamController = TextEditingController();
-  final dateformat = DateFormat('dd/MM/yyyy');
-  final timeformat = DateFormat('hh:mm a');
-  DateTime TanggalMeninggal ;
-  DateTime TanggalSemayam;
+  final dateFormat = DateFormat('dd/MM/yyyy');
+  final timeFormat = DateFormat('hh:mm a');
+  DateTime tanggalMeninggal;
+
+  DateTime tanggalSemayam;
   DateTime waktuSemayam;
+  BuildContext _snackBarContext;
 
   File image;
   var imagefile, _prosesi;
@@ -55,220 +56,214 @@ class _PostAddState extends State<PostAdd> {
         ),
         backgroundColor: Colors.grey[350],
         actions: <Widget>[
-          IconButton(
-            color: Colors.black,
-            icon: Icon(Icons.check),
-            onPressed: () {
-              setState(() {
-                isLoading = true;
-              });
-              savePost();
-            },
-          )
+          Builder(builder: (BuildContext context) {
+            return IconButton(
+              color: Colors.black,
+              icon: Icon(Icons.check),
+              onPressed: () {
+                _snackBarContext = context;
+                image == null ? showErrorMessage() : savePost();
+              },
+            );
+          })
         ],
       ),
       body: Container(
         margin: EdgeInsets.all(16.0),
-        child: buildFormField(),
+        child: ListView(
+          padding: EdgeInsets.only(top: 8.0),
+          children: <Widget>[
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Nama',
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    maxLength: 50,
+                    maxLines: 1,
+                    controller: namaController,
+                    textCapitalization: TextCapitalization.words,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Usia',
+                      hintText: 'Tulis usia dalam satuan tahun',
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    maxLength: 3,
+                    maxLines: 1,
+                    controller: umurController,
+                    textCapitalization: TextCapitalization.words,
+                  ),
+                  DateTimePickerFormField(
+                    inputType: InputType.date,
+                    editable: false,
+                    format: dateFormat,
+                    controller: tanggalMeninggalController,
+                    decoration: InputDecoration(
+                      labelText: 'Tanggal Meninggal',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() => date = value),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Alamat',
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    maxLength: 50,
+                    maxLines: 1,
+                    controller: alamatController,
+                    textCapitalization: TextCapitalization.words,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 8.0,
+                      ),
+                      new Radio(
+                        value: 'Dimakamkan',
+                        onChanged: handleProsesi,
+                        activeColor: Colors.green,
+                        groupValue: _prosesi,
+                      ),
+                      Text('Dimakamkan'),
+                      SizedBox(
+                        height: 8.0,
+                      ),
+                      new Radio(
+                        value: 'Dikremasi',
+                        onChanged: handleProsesi,
+                        activeColor: Colors.green,
+                        groupValue: _prosesi,
+                      ),
+                      Text('Dikremasi'),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Tempat disemayamkan',
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    maxLength: 50,
+                    maxLines: 1,
+                    controller: tempatSemayamController,
+                    textCapitalization: TextCapitalization.words,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Tempat Pemakaman/Kremasi',
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    maxLength: 50,
+                    maxLines: 1,
+                    controller: tempatProsesiController,
+                    textCapitalization: TextCapitalization.words,
+                  ),
+                  DateTimePickerFormField(
+                    inputType: InputType.date,
+                    editable: false,
+                    format: dateFormat,
+                    controller: tanggalProsesiController,
+                    decoration: InputDecoration(
+                      labelText: 'Tanggal Pemakaman/Kremasi',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    onChanged: (dt) => setState(() => date = dt),
+                  ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  DateTimePickerFormField(
+                    inputType: InputType.time,
+                    editable: false,
+                    format: timeFormat,
+                    controller: waktuSemayamController,
+                    decoration: InputDecoration(
+                      labelText: 'Jam Pemakaman/Kremasi',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    onChanged: (dt) => setState(() => date = dt),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Keterangan',
+                      hintText: 'Tulis keterangan...',
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    maxLength: 200,
+                    maxLines: 6,
+                    controller: keteranganController,
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          Icons.camera_alt,
+                          color: Colors.grey,
+                        ),
+                        onPressed: getImageCamera,
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.image,
+                          color: Colors.grey,
+                        ),
+                        onPressed: getImageGallery,
+                      ),
+                      Container(
+                          height: 20,
+                          width: 20,
+                          child: isLoading == true
+                              ? CircularProgressIndicator()
+                              : Text('')),
+                    ],
+                  ),
+                  imagefile != null ? buildImage() : Text(''),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    );
-  }
-
-  ListView buildFormField() {
-    return ListView(
-      padding: EdgeInsets.only(top: 8.0),
-      children: <Widget>[
-        Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Nama',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                maxLength: 50,
-                maxLines: 1,
-                controller: namaController,
-                textCapitalization: TextCapitalization.words,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Usia',
-                  hintText: 'Tulis usia dalam satuan tahun',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                keyboardType: TextInputType.number,
-                maxLength: 3,
-                maxLines: 1,
-                controller: umurController,
-                textCapitalization: TextCapitalization.words,
-              ),
-              DateTimePickerFormField(
-                inputType: InputType.date,
-                editable: false,
-                format: dateformat,
-                controller: tanggalMeninggalController,
-                decoration: InputDecoration(
-                  labelText: 'Tanggal Meninggal',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                onChanged: (value) => setState(() => date = value),
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Alamat',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                maxLength: 50,
-                maxLines: 1,
-                controller: alamatController,
-                textCapitalization: TextCapitalization.words,
-              ),
-              Row(
-                children: <Widget>[
-                  SizedBox(
-                    height: 8.0,
-                  ),
-                  new Radio(
-                    value: 'Dimakamkan',
-                    onChanged: handleProsesi,
-                    activeColor: Colors.green,
-                    groupValue: _prosesi,
-                  ),
-                  Text('Dimakamkan'),
-                  SizedBox(
-                    height: 8.0,
-                  ),
-                  new Radio(
-                    value: 'Dikremasi',
-                    onChanged: handleProsesi,
-                    activeColor: Colors.green,
-                    groupValue: _prosesi,
-                  ),
-                  Text('Dikremasi'),
-                ],
-              ),
-
-
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Tempat disemayamkan',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                maxLength: 50,
-                maxLines: 1,
-                controller: tempatSemayamController,
-                textCapitalization: TextCapitalization.words,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Tempat Pemakaman/Kremasi',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                maxLength: 50,
-                maxLines: 1,
-                controller: tempatProsesiController,
-                textCapitalization: TextCapitalization.words,
-              ),
-              DateTimePickerFormField(
-                inputType: InputType.date,
-                editable: false,
-                format: dateformat,
-                controller: tanggalProsesi,
-                decoration: InputDecoration(
-                  labelText: 'Tanggal Pemakaman/Kremasi',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                onChanged: (dt) => setState(() => date = dt),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              DateTimePickerFormField(
-                inputType: InputType.time,
-                editable: false,
-                format: timeformat,
-                controller: waktuSemayamController,
-                decoration: InputDecoration(
-                  labelText: 'Jam Pemakaman/Kremasi',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                onChanged: (dt) => setState(() => date = dt),
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Keterangan',
-                  hintText: 'Tulis keterangan...',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                maxLength: 200,
-                maxLines: 6,
-                controller: keteranganController,
-                textCapitalization: TextCapitalization.sentences,
-              ),
-              Row(
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.camera_alt,
-                      color: Colors.grey,
-                    ),
-                    onPressed: getImageCamera,
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.image,
-                      color: Colors.grey,
-                    ),
-                    onPressed: getImageGallery,
-                  ),
-                  Container(
-                      height: 20,
-                      width: 20,
-                      child: isLoading == true
-                          ? CircularProgressIndicator()
-                          : Text('')),
-                ],
-              ),
-              imagefile != null ? buildImage() : Text(''),
-            ],
-          ),
-        )
-      ],
     );
   }
 
@@ -325,6 +320,9 @@ class _PostAddState extends State<PostAdd> {
       });
     });
     if (image != null) {
+      setState(() {
+        isLoading = true;
+      });
       uploadImage(image).then((_url) {
         var postRef = FirebaseDatabase.instance.reference().child('posts');
 
@@ -339,12 +337,11 @@ class _PostAddState extends State<PostAdd> {
             'tanggalMeninggal': tanggalMeninggalController.text,
             'alamat': alamatController.text,
             'prosesi': _prosesi.toString(),
-            'tempatDimakamkan': tempatProsesiController.text,
-            'tanggalSemayam': tanggalProsesi.text,
+            'tempatMakam': tempatProsesiController.text,
+            'tanggalSemayam': tanggalProsesiController.text,
             'lokasiSemayam': tempatSemayamController.text,
             'waktuSemayam': waktuSemayamController.text,
             'keterangan': keteranganController.text
-
           }).whenComplete(() {
             print('Posting selesai.......');
             Navigator.pop(context,
@@ -373,7 +370,6 @@ class _PostAddState extends State<PostAdd> {
     print('Process type : $value');
     setState(() {
       _prosesi = value;
-
     });
   }
 
@@ -382,5 +378,13 @@ class _PostAddState extends State<PostAdd> {
     // TODO: implement initState
     super.initState();
     _prosesi = 'Dimakamkan';
+  }
+
+  @override
+  void showErrorMessage() {
+    Scaffold.of(_snackBarContext).showSnackBar(SnackBar(
+      content: Text("Photo wajib ada"),
+      duration: Duration(seconds: 5),
+    ));
   }
 }

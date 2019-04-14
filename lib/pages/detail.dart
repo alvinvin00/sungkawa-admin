@@ -62,7 +62,7 @@ class _DetailState extends State<Detail> {
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    "Umur : " + widget.person.usia + " tahun",
+                    "Usia : " + widget.person.usia + " tahun",
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(

@@ -21,8 +21,7 @@ class UpdatePost extends StatefulWidget {
 }
 
 class _UpdatePostState extends State<UpdatePost> {
-  String userId;
-  String nama, umur, alamat, lokasiSemayam, keterangan, tempatMakam;
+  String userId, nama, umur, alamat, lokasiSemayam, keterangan, tempatMakam;
 
   bool isChanged = false;
   var postRef;
@@ -414,7 +413,7 @@ class _UpdatePostState extends State<UpdatePost> {
         'tanggalMeninggal': tanggalMeninggal,
         'alamat': alamat,
         'prosesi': _prosesi.toString(),
-        'tempatDimakamkan': tempatMakam,
+        'tempatMakam': tempatMakam,
         'tanggalSemayam': tanggalSemayam,
         'lokasiSemayam': lokasiSemayam,
         'waktuSemayam': waktuSemayam,
