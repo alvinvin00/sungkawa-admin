@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sung/model/person.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-//import 'package:sung/utilities/firebase_database_util.dart';
 
 class UpdatePost extends StatefulWidget {
   final Person person;
