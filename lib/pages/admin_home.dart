@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
     print(post);
     setState(() {
       postList.add(post);
+      postList.sort((i, j) => j.timestamp.compareTo(i.timestamp));
     });
   }
 
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     post = new Person.fromsnapShot(event.snapshot);
     setState(() {
       postList.add(post);
+      postList.sort((i, j) => j.timestamp.compareTo(i.timestamp));
     });
   }
 
@@ -69,7 +71,9 @@ class _HomePageState extends State<HomePage> {
     postList.clear();
     onPostAddedSubscription = postref.onChildAdded.listen(_onPostAdded);
     onPostChangedSubscription = postref.onChildChanged.listen(_onPostChanged);
+    postList.sort((i, j) => j.timestamp.compareTo(i.timestamp));
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -83,13 +87,11 @@ class _HomePageState extends State<HomePage> {
           : ListView.builder(
               itemBuilder: (buildContext, int index) {
                 Person person = postList[index];
-                postList.sort((i,j)=>j.timestamp.compareTo(i.timestamp));
 
                 return Padding(
                   padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                   child: GestureDetector(
                     onTap: () {
-
                       Navigator.push(
                           context,
                           MaterialPageRoute(
