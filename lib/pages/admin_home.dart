@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   var title;
   var nama, umur, lokasi, semayam, keluarga, post;
 
-  List<Person> postlist = new List();
+  List<Person> postList = new List();
   final GlobalKey<RefreshIndicatorState> _refreshPageKey =
       new GlobalKey<RefreshIndicatorState>();
 
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     post = new Person.fromsnapShot(event.snapshot);
     print(post);
     setState(() {
-      postlist.add(post);
+      postList.add(post);
     });
   }
 
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
     print('Berita diupdate');
     post = new Person.fromsnapShot(event.snapshot);
     setState(() {
-      postlist.add(post);
+      postList.add(post);
     });
   }
 
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    postlist.clear();
+    postList.clear();
     onPostAddedSubscription = postref.onChildAdded.listen(_onPostAdded);
     onPostChangedSubscription = postref.onChildChanged.listen(_onPostChanged);
   }
@@ -66,15 +66,14 @@ class _HomePageState extends State<HomePage> {
   void didUpdateWidget(HomePage oldWidget) {
     // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
-    postlist.clear();
+    postList.clear();
     onPostAddedSubscription = postref.onChildAdded.listen(_onPostAdded);
     onPostChangedSubscription = postref.onChildChanged.listen(_onPostChanged);
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: postlist == null
+      child: postList == null
           ? const Center(
               child: const Text(
                 "Data Masih Kosong",
@@ -83,19 +82,21 @@ class _HomePageState extends State<HomePage> {
             )
           : ListView.builder(
               itemBuilder: (buildContext, int index) {
+                Person person = postList[index];
+                postList.sort((i,j)=>j.timestamp.compareTo(i.timestamp));
+
                 return Padding(
                   padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                   child: GestureDetector(
                     onTap: () {
-                      Person siperson = postlist[index];
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Detail(siperson)));
+                              builder: (context) => Detail(person)));
                     },
                     onLongPress: () {
                       print('Buka update');
-                      Person person = postlist[index];
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -117,7 +118,7 @@ class _HomePageState extends State<HomePage> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  postlist[index].nama,
+                                  postList[index].nama,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18.0,
@@ -128,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Text(
                                   util.convertTimestamp(
-                                    postlist[index].timestamp,
+                                    postList[index].timestamp,
                                   ),
                                   style: TextStyle(
                                       fontSize: 14.0, color: Colors.grey),
@@ -143,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                               bottom: 10.0,
                             ),
                             child: Text(
-                              postlist[index].usia + ' tahun',
+                              postList[index].usia + ' tahun',
                               style: TextStyle(
                                 fontSize: 14.0,
                                 color: Colors.grey,
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                                   CircularProgressIndicator(),
                               errorWidget: (context, url, error) =>
                                   Icon(Icons.error),
-                              imageUrl: postlist[index].photo,
+                              imageUrl: postList[index].photo,
                               height: 240.0,
                               width: double.infinity,
                               fit: BoxFit.fitWidth,
@@ -171,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               },
-              itemCount: postlist == null ? 0 : postlist.length,
+              itemCount: postList == null ? 0 : postList.length,
             ),
     );
   }

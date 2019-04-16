@@ -5,20 +5,21 @@ class Utilities {
     var now = new DateTime.now();
     var format = new DateFormat('HH:mm');
     var date = new DateTime.fromMicrosecondsSinceEpoch(timestamp * 1000);
-    var difer = date.difference(now);
-    var time = '';
+    var diff = now.difference(date);
+    var timeText = '';
 
-    if (difer.inSeconds <=0 || difer.inSeconds >0 && difer.inMinutes ==0 ||
-    difer.inMinutes >0 && difer.inHours == 0 || difer.inHours > 0 && difer.inDays ==0){
-      time = format.format(date);
+    if (diff.inSeconds <=0 || diff.inSeconds >0 && diff.inMinutes ==0 ||
+    diff.inMinutes >0 && diff.inHours == 0 || diff.inHours > 0 && diff.inDays ==0){
+      timeText = format.format(date);
     }else{
-      if(difer.inDays == 1){
-        time = difer.inDays.toString() + 'HARI YANG LALU';
-        }
-        else{
-          time = difer.inDays.toString()+ 'HARI YANG LALU';
-      }
+//      if(diff.inDays == 1){
+//        time = diff.inDays.toString() + ' HARI YANG LALU';
+//        }
+//        else{
+//          time = diff.inDays.toString()+ ' HARI YANG LALU';
+//      }
+    timeText = diff.inDays.toString() + ' HARI YANG LALU';
     }
-      return time;
+      return timeText;
   }
 }
