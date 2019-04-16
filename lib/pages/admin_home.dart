@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:sung/model/person.dart';
+import 'package:Sungkawa/model/person.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:sung/pages/post_update.dart';
-import 'package:sung/utilities/utilities.dart';
-import 'package:sung/pages/detail.dart';
-//import 'package:sung/utilities/firebase_database_util.dart';
+import 'package:Sungkawa/pages/post_update.dart';
+import 'package:Sungkawa/utilities/utilities.dart';
+import 'package:Sungkawa/pages/detail.dart';
 
 class HomePage extends StatefulWidget {
   @override

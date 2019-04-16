@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:752220941673:android:81b7093e02661573",
         "android_client_info": {
-          "package_name": "com.example.sung"
+          "package_name": "com.mdpic.sungkawa_admin"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "752220941673-atd1kk37im4euiuhe470isjfgljijodq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.sung",
+            "package_name": "com.mdpic.sungkawa_admin",
             "certificate_hash": "5173e5403f418c7ae4bb7c95dd32919a998d6ec1"
           }
         }

@@ -6,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:sung/model/person.dart';
+import 'package:Sungkawa/model/person.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class UpdatePost extends StatefulWidget {

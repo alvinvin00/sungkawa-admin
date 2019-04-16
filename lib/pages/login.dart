@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sung/pages/main.dart';
+import 'package:Sungkawa/pages/main.dart';
 import 'dart:async';
 
 

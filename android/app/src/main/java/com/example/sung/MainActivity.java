@@ -1,4 +1,4 @@
-package com.example.sung;
+package com.mdpic.sungkawa_admin;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
