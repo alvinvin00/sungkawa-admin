@@ -29,7 +29,7 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       body: new Padding(
         padding: const EdgeInsets.all(20.0),
         child: new Column(
@@ -44,7 +44,7 @@ class Login extends StatelessWidget {
                     .then((FirebaseUser user) => print(user))
                     .catchError((e) => print('Error: $e'                                                                                                                                                                                                                                                                                                 ))
                     .whenComplete(() {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardScreen()));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardScreen()));
                 });
               },
               child: new Text(

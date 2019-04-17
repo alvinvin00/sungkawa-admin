@@ -30,7 +30,7 @@ dependencies:
   image_picker: ^0.5.0+3
   shared_preferences: ^0.5.1+2
   datetime_picker_formfield: ^0.1.8
-
+  splashscreen:
    
 
 dev_dependencies:

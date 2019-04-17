@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:Sungkawa/pages/admin_home.dart';
 import 'package:flutter/services.dart';
+import 'package:splashscreen/splashscreen.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -25,13 +26,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'Sungkawa',
       theme: new ThemeData(
           primarySwatch: Colors.blueGrey,
           pageTransitionsTheme: PageTransitionsTheme(builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           })),
-      home: DashboardScreen(),
+      home: new SplashScreen(
+        seconds: 1,
+        title: Text('Sungkawa'),
+        image: Image.asset(
+          'assets/images/logo_mdp.png',
+          fit: BoxFit.cover,
+          width: 280,
+        ),
+        navigateAfterSeconds: DashboardScreen(),
+      ),
     );
   }
 }
@@ -44,7 +55,7 @@ class DashboardScreen extends StatefulWidget {
 enum AuthStatus { signedIn, notSignedIn }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  AuthStatus _authStatus = AuthStatus.notSignedIn;
+  AuthStatus _authStatus;
   var connectionStatus;
 
   @override
@@ -75,45 +86,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     switch (_authStatus) {
       case AuthStatus.notSignedIn:
-        return Login();
-
+        return new Login();
+        break;
       case AuthStatus.signedIn:
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Sungkawa',
-              textAlign: TextAlign.center,
-            ),
-            actions: <Widget>[
-              PopupMenuButton(
-                  onSelected: selectedAction,
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<Pilihan>>[
-                        const PopupMenuItem(
-                          child: Text('Tentang Kami'),
-                          value: Pilihan.about,
-                        ),
-                        const PopupMenuItem(
-                          child: Text('SignOut'),
-                          value: Pilihan.signOut,
-                        )
-                      ])
-            ],
-            backgroundColor: Colors.grey,
-          ),
-          body: HomePage(),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PostAdd()),
-              );
-            },
-            child: Icon(Icons.add),
-            backgroundColor: Colors.blueGrey[500],
-          ),
-        );
+        return buildHomeScreen(context);
+        break;
     }
+  }
+
+  Scaffold buildHomeScreen(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: Text(
+          'Sungkawa',
+          textAlign: TextAlign.center,
+        ),
+        actions: <Widget>[
+          PopupMenuButton(
+              onSelected: selectedAction,
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<Pilihan>>[
+                    const PopupMenuItem(
+                      child: Text('Tentang Kami'),
+                      value: Pilihan.about,
+                    ),
+                    const PopupMenuItem(
+                      child: Text('SignOut'),
+                      value: Pilihan.signOut,
+                    )
+                  ])
+        ],
+        backgroundColor: Colors.grey,
+      ),
+      body: HomePage(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PostAdd()),
+          );
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blueGrey[500],
+      ),
+    );
   }
 
   void selectedAction(Pilihan value) {
@@ -131,7 +148,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     FirebaseAuth.instance.signOut();
     googleSignIn.signOut();
     _authStatus = AuthStatus.notSignedIn;
-    Navigator.pop(
+    Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (BuildContext context) => Login()));
   }
 

@@ -35,7 +35,6 @@ class _PostAddState extends State<PostAdd> {
   final timeFormat = DateFormat('hh:mm a');
   DateTime tanggalMeninggal;
 
-  DateTime tanggalSemayam;
   DateTime waktuSemayam;
   BuildContext _snackBarContext;
 
@@ -188,6 +187,9 @@ class _PostAddState extends State<PostAdd> {
                     textCapitalization: TextCapitalization.words,
                   ),
                   DateTimePickerFormField(
+                    validator: (value) => value.isBefore(tanggalMeninggal)
+                        ? 'Tanggal Prosesi harus sesudah Tanggal Meninggal'
+                        : null,
                     inputType: InputType.date,
                     editable: false,
                     format: dateFormat,
@@ -380,11 +382,10 @@ class _PostAddState extends State<PostAdd> {
     _prosesi = 'Dimakamkan';
   }
 
-  @override
   void showErrorMessage() {
     Scaffold.of(_snackBarContext).showSnackBar(SnackBar(
       content: Text("Photo wajib ada"),
-      duration: Duration(seconds: 5),
+      duration: Duration(milliseconds: 300),
     ));
   }
 }
