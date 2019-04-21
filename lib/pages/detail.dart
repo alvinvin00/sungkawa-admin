@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:Sungkawa/model/person.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
 class Detail extends StatefulWidget {
   final Person person;

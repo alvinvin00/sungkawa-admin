@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:Sungkawa/model/person.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:Sungkawa/model/person.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class UpdatePost extends StatefulWidget {
   final Person person;
@@ -256,6 +257,9 @@ class _UpdatePostState extends State<UpdatePost> {
                 editable: false,
                 format: dateFormat,
                 initialValue: tanggalSemayam,
+                validator: (value) => value.isBefore(tanggalMeninggal)
+                    ? 'Tanggal Prosesi harus sesudah Tanggal Meninggal'
+                    : null,
                 onSaved: (value) => tanggalSemayam = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Pemakaman/Kremasi',

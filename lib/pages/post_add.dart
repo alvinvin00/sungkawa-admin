@@ -1,13 +1,14 @@
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
+
+import 'package:Sungkawa/pages/main.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:Sungkawa/pages/main.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 class PostAdd extends StatefulWidget {
   @override
@@ -29,21 +30,18 @@ class _PostAddState extends State<PostAdd> {
   final keluargaController = TextEditingController();
   final tempatsemyamController = TextEditingController();
   final keteranganController = TextEditingController();
-  final tanggalProsesiController = TextEditingController();
+  final tanggalSemayamController = TextEditingController();
   final waktuSemayamController = TextEditingController();
   final dateFormat = DateFormat('dd/MM/yyyy');
   final timeFormat = DateFormat('hh:mm a');
-  DateTime tanggalMeninggal;
 
-  DateTime waktuSemayam;
   BuildContext _snackBarContext;
 
   File image;
-  var imagefile, _prosesi;
+  var imageFile, _prosesi;
   bool isLoading = false;
-  String kubur;
 
-  var radiovalue;
+  var radioValue;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +59,7 @@ class _PostAddState extends State<PostAdd> {
               icon: Icon(Icons.check),
               onPressed: () {
                 _snackBarContext = context;
-                image == null ? showErrorMessage() : savePost();
+                checkForError();
               },
             );
           })
@@ -187,20 +185,16 @@ class _PostAddState extends State<PostAdd> {
                     textCapitalization: TextCapitalization.words,
                   ),
                   DateTimePickerFormField(
-                    validator: (value) => value.isBefore(tanggalMeninggal)
-                        ? 'Tanggal Prosesi harus sesudah Tanggal Meninggal'
-                        : null,
                     inputType: InputType.date,
                     editable: false,
                     format: dateFormat,
-                    controller: tanggalProsesiController,
+                    controller: tanggalSemayamController,
                     decoration: InputDecoration(
                       labelText: 'Tanggal Pemakaman/Kremasi',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
-                    onChanged: (dt) => setState(() => date = dt),
                   ),
                   SizedBox(
                     height: 8.0,
@@ -259,7 +253,7 @@ class _PostAddState extends State<PostAdd> {
                               : Text('')),
                     ],
                   ),
-                  imagefile != null ? buildImage() : Text(''),
+                  imageFile != null ? buildImage() : Text(''),
                 ],
               ),
             ),
@@ -272,7 +266,7 @@ class _PostAddState extends State<PostAdd> {
   Widget buildImage() {
     return Container(
       child: Image.file(
-        imagefile,
+        imageFile,
         width: MediaQuery.of(context).size.width,
         height: 240,
         fit: BoxFit.fitWidth,
@@ -282,10 +276,10 @@ class _PostAddState extends State<PostAdd> {
 
   void getImageGallery() async {
     try {
-      imagefile = await ImagePicker.pickImage(source: ImageSource.gallery);
-      print('imageFile : $imagefile');
+      imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+      print('imageFile : $imageFile');
       setState(() {
-        image = imagefile;
+        image = imageFile;
       });
     } catch (e) {
       print('Error $e');
@@ -294,10 +288,10 @@ class _PostAddState extends State<PostAdd> {
 
   void getImageCamera() async {
     try {
-      imagefile = await ImagePicker.pickImage(source: ImageSource.camera);
-      print('imageFile : $imagefile');
+      imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+      print('imageFile : $imageFile');
       setState(() {
-        image = imagefile;
+        image = imageFile;
       });
     } catch (e) {
       print('Error $e');
@@ -340,7 +334,7 @@ class _PostAddState extends State<PostAdd> {
             'alamat': alamatController.text,
             'prosesi': _prosesi.toString(),
             'tempatMakam': tempatProsesiController.text,
-            'tanggalSemayam': tanggalProsesiController.text,
+            'tanggalSemayam': tanggalSemayamController.text,
             'lokasiSemayam': tempatSemayamController.text,
             'waktuSemayam': waktuSemayamController.text,
             'keterangan': keteranganController.text
@@ -382,10 +376,22 @@ class _PostAddState extends State<PostAdd> {
     _prosesi = 'Dimakamkan';
   }
 
-  void showErrorMessage() {
-    Scaffold.of(_snackBarContext).showSnackBar(SnackBar(
-      content: Text("Photo wajib ada"),
-      duration: Duration(milliseconds: 300),
-    ));
+  void checkForError() {
+    DateTime tanggalMeninggal =
+        dateFormat.parse(tanggalMeninggalController.text);
+    DateTime tanggalSemayam = dateFormat.parse(tanggalSemayamController.text);
+    if (image == null) {
+      Scaffold.of(_snackBarContext).showSnackBar(SnackBar(
+        content: Text("Photo wajib ada"),
+        duration: Duration(seconds: 3),
+      ));
+    } else if (tanggalSemayam.isBefore(tanggalMeninggal)) {
+      Scaffold.of(_snackBarContext).showSnackBar(SnackBar(
+        content: Text(
+            "Tanggal Meninggal tidak boleh ditetapkan sebelum Tanggal Semayam"),
+        duration: Duration(seconds: 3),
+      ));
+    } else
+      savePost();
   }
 }

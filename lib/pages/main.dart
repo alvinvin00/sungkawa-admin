@@ -1,14 +1,15 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:Sungkawa/pages/about.dart';
-import 'package:Sungkawa/pages/post_add.dart';
-import 'login.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:Sungkawa/pages/admin_home.dart';
+import 'package:Sungkawa/pages/post_add.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:splashscreen/splashscreen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'login.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -20,6 +21,7 @@ void main() {
 enum Pilihan { about, signOut }
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 class MyApp extends StatelessWidget {
   @override
@@ -34,7 +36,7 @@ class MyApp extends StatelessWidget {
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           })),
       home: new SplashScreen(
-        seconds: 1,
+        seconds: 5,
         title: Text('Sungkawa'),
         image: Image.asset(
           'assets/images/logo_mdp.png',

@@ -31,6 +31,8 @@ dependencies:
   shared_preferences: ^0.5.1+2
   datetime_picker_formfield: ^0.1.8
   splashscreen:
+  firebase_messaging: ^4.0.0+3
+#  search_widget: any
    
 
 dev_dependencies:
