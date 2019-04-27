@@ -21,7 +21,7 @@ class UpdatePost extends StatefulWidget {
 
 class _UpdatePostState extends State<UpdatePost> {
   String userId, nama, usia, alamat, lokasiSemayam, keterangan, tempatMakam;
-
+  double _progress;
   bool isChanged = false;
   var postRef;
 
@@ -29,11 +29,6 @@ class _UpdatePostState extends State<UpdatePost> {
   void initState() {
     // TODO: implement initState
     super.initState();
-//    print({
-//      'tanggalSemayam : ${widget.person.tanggalSemayam}',
-//      'tanggalMeninggal : ${widget.person.tanggalMeninggal}',
-//      'waktuSemayam : ${widget.person.waktuSemayam}'
-//    });
 
     postRef = FirebaseDatabase.instance
         .reference()
@@ -61,6 +56,7 @@ class _UpdatePostState extends State<UpdatePost> {
   File image;
   var imageFile, _prosesi;
   bool isLoading = false;
+  bool isUploading = false;
   final dateFormat = DateFormat('dd/MM/yyyy');
   final timeFormat = DateFormat('hh:mm a');
   final formKey = GlobalKey<FormState>();
@@ -74,7 +70,6 @@ class _UpdatePostState extends State<UpdatePost> {
           IconButton(
             icon: Icon(Icons.check),
             onPressed: () {
-              isLoading = true;
               validateAndSubmit();
             },
           ),
@@ -115,12 +110,7 @@ class _UpdatePostState extends State<UpdatePost> {
                     ),
                     onPressed: getImageGallery,
                   ),
-                  Container(
-                      height: 20,
-                      width: 20,
-                      child: isLoading == true
-                          ? CircularProgressIndicator()
-                          : Text('')),
+                  buildProgressIndicator()
                 ],
               ),
               SizedBox(
@@ -177,7 +167,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 height: 10.0,
               ),
               TextFormField(
-                initialValue: widget.person.alamat,
+                initialValue: alamat,
                 validator: (value) =>
                     value.isEmpty ? 'Alamat tidak boleh kosong' : null,
                 decoration: InputDecoration(
@@ -360,6 +350,15 @@ class _UpdatePostState extends State<UpdatePost> {
     StorageReference storageRef =
         FirebaseStorage.instance.ref().child('image').child(fileName);
     StorageUploadTask task = storageRef.putFile(image);
+
+    task.events.listen((event) {
+      setState(() {
+        isUploading = true;
+        _progress = event.snapshot.bytesTransferred.toDouble() /
+            event.snapshot.totalByteCount.toDouble();
+      });
+    });
+
     var downloadUrl = await (await task.onComplete).ref.getDownloadURL();
     String _url = downloadUrl.toString();
     return _url;
@@ -373,8 +372,12 @@ class _UpdatePostState extends State<UpdatePost> {
       uploadImage(image).then((_url) {
         pushData(_url);
       });
-    } else
+    } else {
+      setState(() {
+        isLoading = true;
+      });
       pushData(widget.person.photo);
+    }
   }
 
   bool validateAndSave() {
@@ -426,7 +429,19 @@ class _UpdatePostState extends State<UpdatePost> {
       });
     } catch (e) {
       print('error : $e');
-      isLoading = false;
     }
+  }
+
+  Widget buildProgressIndicator() {
+    if (isUploading == true)
+      return Expanded(
+          child: LinearProgressIndicator(
+        value: _progress,
+      ));
+    else if (isLoading == true)
+      return Container(
+          width: 20, height: 20, child: CircularProgressIndicator());
+    else
+      return SizedBox();
   }
 }

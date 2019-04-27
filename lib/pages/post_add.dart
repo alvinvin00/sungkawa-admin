@@ -16,6 +16,7 @@ class PostAdd extends StatefulWidget {
 }
 
 class _PostAddState extends State<PostAdd> {
+  double _progress;
   String userId;
   InputType inputType = InputType.date;
   bool editable = true;
@@ -40,6 +41,7 @@ class _PostAddState extends State<PostAdd> {
   File image;
   var imageFile, _prosesi;
   bool isLoading = false;
+  bool isUploading = false;
 
   var radioValue;
 
@@ -113,7 +115,6 @@ class _PostAddState extends State<PostAdd> {
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
-                    onChanged: (value) => setState(() => date = value),
                   ),
                   SizedBox(
                     height: 10.0,
@@ -245,12 +246,14 @@ class _PostAddState extends State<PostAdd> {
                         ),
                         onPressed: getImageGallery,
                       ),
-                      Container(
-                          height: 20,
-                          width: 20,
-                          child: isLoading == true
-                              ? CircularProgressIndicator()
-                              : Text('')),
+                      Expanded(
+                        child: isUploading == true
+                            ? LinearProgressIndicator(
+                                value: _progress,
+//                          backgroundColor: Colors.black,
+                              )
+                            : SizedBox(),
+                      ),
                     ],
                   ),
                   imageFile != null ? buildImage() : Text(''),
@@ -304,8 +307,18 @@ class _PostAddState extends State<PostAdd> {
     StorageReference storageRef =
         FirebaseStorage.instance.ref().child('image').child(fileName);
     StorageUploadTask task = storageRef.putFile(image);
+
+    task.events.listen((event) {
+      setState(() {
+        isUploading = true;
+        _progress = event.snapshot.bytesTransferred.toDouble() /
+            event.snapshot.totalByteCount.toDouble();
+      });
+    });
+
     var downloadUrl = await (await task.onComplete).ref.getDownloadURL();
     String _url = downloadUrl.toString();
+
     return _url;
   }
 
@@ -315,51 +328,43 @@ class _PostAddState extends State<PostAdd> {
         userId = user.uid;
       });
     });
-    if (image != null) {
-      setState(() {
-        isLoading = true;
-      });
-      uploadImage(image).then((_url) {
-        var postRef = FirebaseDatabase.instance.reference().child('posts');
+    uploadImage(image).then((_url) {
+      var postRef = FirebaseDatabase.instance.reference().child('posts');
 
-        try {
-          print('Posting ....');
-          postRef.push().set({
-            'nama': namaController.text,
-            'usia': umurController.text,
-            'photo': _url,
-            'timestamp': timestamp,
-            'userId': userId,
-            'tanggalMeninggal': tanggalMeninggalController.text,
-            'alamat': alamatController.text,
-            'prosesi': _prosesi.toString(),
-            'tempatMakam': tempatProsesiController.text,
-            'tanggalSemayam': tanggalSemayamController.text,
-            'lokasiSemayam': tempatSemayamController.text,
-            'waktuSemayam': waktuSemayamController.text,
-            'keterangan': keteranganController.text
-          }).whenComplete(() {
-            print('Posting selesai.......');
-            Navigator.pop(context,
-                MaterialPageRoute(builder: (context) => DashboardScreen()));
-            namaController.clear();
-            tempatProsesiController.clear();
-            alamatController.clear();
-            waktuSemayamController.clear();
-            keteranganController.clear();
-            tanggalMeninggalController.clear();
-            umurController.clear();
-            tanggalMeninggalController.clear();
-            tempatSemayamController.clear();
-          });
-        } catch (e) {
-          print('error : $e');
-          isLoading = false;
-        }
-      });
-    } else {
-      isLoading = false;
-    }
+      try {
+        print('Posting ....');
+        postRef.push().set({
+          'nama': namaController.text,
+          'usia': umurController.text,
+          'photo': _url,
+          'timestamp': timestamp,
+          'userId': userId,
+          'tanggalMeninggal': tanggalMeninggalController.text,
+          'alamat': alamatController.text,
+          'prosesi': _prosesi.toString(),
+          'tempatMakam': tempatProsesiController.text,
+          'tanggalSemayam': tanggalSemayamController.text,
+          'lokasiSemayam': tempatSemayamController.text,
+          'waktuSemayam': waktuSemayamController.text,
+          'keterangan': keteranganController.text
+        }).whenComplete(() {
+          print('Posting selesai.......');
+          Navigator.pop(context,
+              MaterialPageRoute(builder: (context) => DashboardScreen()));
+          namaController.clear();
+          tempatProsesiController.clear();
+          alamatController.clear();
+          waktuSemayamController.clear();
+          keteranganController.clear();
+          tanggalMeninggalController.clear();
+          umurController.clear();
+          tanggalMeninggalController.clear();
+          tempatSemayamController.clear();
+        });
+      } catch (e) {
+        print('error : $e');
+      }
+    });
   }
 
   void handleProsesi(value) {

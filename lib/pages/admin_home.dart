@@ -6,6 +6,7 @@ import 'package:Sungkawa/pages/post_update.dart';
 import 'package:Sungkawa/utilities/utilities.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -112,11 +113,12 @@ class _HomePageState extends State<HomePage> {
                       showDialog(
                           barrierDismissible: true,
                           context: context,
-                          builder: (context) => SimpleDialog(
-                                children: <Widget>[
-                                  FlatButton(
+                          builder: (context) => CupertinoAlertDialog(
+                            title: Text(postList[index].nama),
+                                actions: <Widget>[
+                                  FlatButton(textColor: Colors.blue,
                                       onPressed: () {
-                                        Navigator.push(
+                                        Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
@@ -124,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                                         );
                                       },
                                       child: Text('Update')),
-                                  FlatButton(
+                                  FlatButton(textColor: Colors.red,
                                       onPressed: () {
                                         var postRef = FirebaseDatabase.instance
                                             .reference()
@@ -231,18 +233,24 @@ class _HomePageState extends State<HomePage> {
     DateTime tanggalSemayam = dateFormat.parse(postList[index].tanggalSemayam);
     DateTime waktuSemayam = timeFormat.parse(postList[index].waktuSemayam);
 
-    var now = DateTime.now();
+    int deathStamp = tanggalMeninggal.millisecondsSinceEpoch;
+    int dateStamp = tanggalSemayam.millisecondsSinceEpoch;
+    int timeStamp = waktuSemayam.millisecondsSinceEpoch;
 
-    print(now);
-    if (now.isAfter(tanggalMeninggal))
-      return Text(
-        'Disemayamkan',
-        style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
-      );
-    if (now.isAfter(tanggalSemayam))
+    var now = DateTime.now().millisecondsSinceEpoch;
+
+    int semayam = dateStamp + timeStamp;
+
+    if (now > semayam) {
       return Text(
         postList[index].prosesi,
         style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
       );
+    } else if (now > deathStamp) {
+      return Text(
+        'Disemayamkan',
+        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+      );
+    }
   }
 }
