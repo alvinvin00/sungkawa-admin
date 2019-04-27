@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
 
   StreamSubscription<Event> onPostAddedSubscription;
   StreamSubscription<Event> onPostChangedSubscription;
+  StreamSubscription<Event> onPostDeletedSubscription;
   int timestamp;
 
   void _onPostAdded(Event event) {
@@ -47,6 +48,13 @@ class _HomePageState extends State<HomePage> {
       postList.sort((i, j) => j.timestamp.compareTo(i.timestamp));
     });
   }
+
+//  void _onPostDeleted(Event event) {
+//    print('Berita dihapus');
+//    post = new Person.fromsnapShot(event.snapshot);
+//
+//
+//  }
 
   @override
   void initState() {
@@ -99,11 +107,39 @@ class _HomePageState extends State<HomePage> {
                               builder: (context) => Detail(person)));
                     },
                     onLongPress: () {
-                      print('Buka update');
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UpdatePost(person)));
+                      print('Alert Dialog Opened');
+                      showDialog(
+                          barrierDismissible: true,
+                          context: context,
+                          builder: (context) => SimpleDialog(
+                                children: <Widget>[
+                                  FlatButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdatePost(person)),
+                                        );
+                                      },
+                                      child: Text('Update')),
+                                  FlatButton(
+                                      onPressed: () {
+                                        var postRef = FirebaseDatabase.instance
+                                            .reference()
+                                            .child('posts')
+                                            .child(postList[index].key);
+                                        postRef.remove().then((person){
+                                          setState(() {
+                                            postList.removeAt(index);
+                                          });
+                                          Navigator.pop(context);
+                                        });
+
+                                      },
+                                      child: Text('Delete')),
+                                ],
+                              ));
                     },
                     child: Card(
                       shape: RoundedRectangleBorder(

@@ -1,14 +1,16 @@
 import 'dart:async';
+
 import 'package:Sungkawa/pages/about.dart';
 import 'package:Sungkawa/pages/admin_home.dart';
 import 'package:Sungkawa/pages/post_add.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:splashscreen/splashscreen.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'login.dart';
 
 void main() {
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           })),
-      home: new SplashScreen(
+      home: SplashScreen(
         seconds: 5,
         title: Text('Sungkawa'),
         image: Image.asset(
@@ -43,7 +45,7 @@ class MyApp extends StatelessWidget {
           fit: BoxFit.cover,
           width: 280,
         ),
-        navigateAfterSeconds: DashboardScreen(),
+        navigateAfterSeconds: new DashboardScreen(),
       ),
     );
   }
@@ -88,7 +90,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     switch (_authStatus) {
       case AuthStatus.notSignedIn:
-        return new Login();
+        return Login();
         break;
       case AuthStatus.signedIn:
         return buildHomeScreen(context);
@@ -107,17 +109,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         actions: <Widget>[
           PopupMenuButton(
-              onSelected: selectedAction,
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<Pilihan>>[
-                    const PopupMenuItem(
-                      child: Text('Tentang Kami'),
-                      value: Pilihan.about,
-                    ),
-                    const PopupMenuItem(
-                      child: Text('SignOut'),
-                      value: Pilihan.signOut,
-                    )
-                  ])
+            onSelected: selectedAction,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<Pilihan>>[
+                  const PopupMenuItem(
+                    child: Text('Tentang Kami'),
+                    value: Pilihan.about,
+                  ),
+                  const PopupMenuItem(
+                    child: Text('SignOut'),
+                    value: Pilihan.signOut,
+                  )
+                ],
+          )
         ],
         backgroundColor: Colors.grey,
       ),
