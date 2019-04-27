@@ -7,6 +7,7 @@ import 'package:Sungkawa/utilities/utilities.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -129,13 +130,12 @@ class _HomePageState extends State<HomePage> {
                                             .reference()
                                             .child('posts')
                                             .child(postList[index].key);
-                                        postRef.remove().then((person){
+                                        postRef.remove().then((person) {
                                           setState(() {
                                             postList.removeAt(index);
                                           });
                                           Navigator.pop(context);
                                         });
-
                                       },
                                       child: Text('Delete')),
                                 ],
@@ -163,9 +163,7 @@ class _HomePageState extends State<HomePage> {
                                     fontSize: 18.0,
                                   ),
                                 ),
-                                Expanded(
-                                  child: SizedBox(),
-                                ),
+                                Expanded(child: SizedBox()),
                                 Text(
                                   util.convertTimestamp(
                                     postList[index].timestamp,
@@ -182,12 +180,20 @@ class _HomePageState extends State<HomePage> {
                               right: 16.0,
                               bottom: 10.0,
                             ),
-                            child: Text(
-                              postList[index].usia + ' tahun',
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.grey,
-                              ),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  postList[index].usia + ' tahun',
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: SizedBox(),
+                                ),
+                                buildStatusText(index)
+                              ],
                             ),
                           ),
                           Center(
@@ -214,5 +220,29 @@ class _HomePageState extends State<HomePage> {
               itemCount: postList == null ? 0 : postList.length,
             ),
     );
+  }
+
+  Widget buildStatusText(int index) {
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final timeFormat = DateFormat('hh:mm a');
+
+    DateTime tanggalMeninggal =
+        dateFormat.parse(postList[index].tanggalMeninggal);
+    DateTime tanggalSemayam = dateFormat.parse(postList[index].tanggalSemayam);
+    DateTime waktuSemayam = timeFormat.parse(postList[index].waktuSemayam);
+
+    var now = DateTime.now();
+
+    print(now);
+    if (now.isAfter(tanggalMeninggal))
+      return Text(
+        'Disemayamkan',
+        style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
+      );
+    if (now.isAfter(tanggalSemayam))
+      return Text(
+        postList[index].prosesi,
+        style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+      );
   }
 }
