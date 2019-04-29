@@ -18,22 +18,9 @@ Utilities util = new Utilities();
 //FirebaseDatabaseUtil databaseUtil;
 
 class _HomePageState extends State<HomePage> {
-  var title;
   var nama, umur, lokasi, semayam, keluarga, post;
 
   List<Person> postlist = new List();
-
-
-  final namaController = TextEditingController();
-  final umurController = TextEditingController();
-  final alamatController = TextEditingController();
-  final locationController = TextEditingController();
-  final tanggalmeninggal = TextEditingController();
-  final meningal = TextEditingController();
-  final keterangan = TextEditingController();
-  final tanggal_kebumikan = TextEditingController();
-  final tempat_dikebumikan = TextEditingController();
-  final waktu_kebumikan = TextEditingController();
 
   StreamSubscription<Event> onPostAddedSubscription;
   StreamSubscription<Event> onPostChangedSubscription;
@@ -84,7 +71,7 @@ class _HomePageState extends State<HomePage> {
               ),
             )
           : ListView.builder(
-              itemBuilder: (BuildContext, int index) {
+              itemBuilder: (BuildContext context, int index) {
                 return Padding(
                   padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                   child: GestureDetector(

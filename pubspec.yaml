@@ -34,6 +34,7 @@ dependencies:
   firebase_messaging: ^4.0.0+3
 #  search_widget: any
   swipedetector: ^1.2.0
+  cloud_firestore: ^0.10.0
 
 dev_dependencies:
   flutter_test:
