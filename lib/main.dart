@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:swipedetector/swipedetector.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -88,45 +89,80 @@ class _DashboardScreenState extends State<DashboardScreen> {
               textAlign: TextAlign.center,
             ),
             actions: <Widget>[
-              FlatButton(
-                child: Text(
-                  'Options',
-                  style: TextStyle(color: Colors.blue[700]),
-                ),
-                onPressed: () {
-                  showCupertinoModalPopup(
-                      context: context,
-                      builder: (context) => CupertinoActionSheet(
-                          title: const Text('Pilihan menu'),
-                          actions: <Widget>[
-                            CupertinoActionSheetAction(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => About()));
-                                },
-                                child: Text('Tentang Kami')),
-                            CupertinoActionSheetAction(
-                                onPressed: signOut, child: Text('SignOut')),
-                          ],
-                          cancelButton: CupertinoActionSheetAction(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('Cancel'))));
-                },
-              )
+//              FlatButton(
+//                child: Text(
+//                  'Options',
+//                  style: TextStyle(color: Colors.blue[700]),
+//                ),
+//                onPressed: () {
+//                  showCupertinoModalPopup(
+//                      context: context,
+//                      builder: (context) => CupertinoActionSheet(
+//                          title: const Text('Pilihan menu'),
+//                          actions: <Widget>[
+//                            CupertinoActionSheetAction(
+//                                onPressed: () {
+//                                  Navigator.push(
+//                                      context,
+//                                      MaterialPageRoute(
+//                                          builder: (context) => About()));
+//                                },
+//                                child: Text('Tentang Kami')),
+//                            CupertinoActionSheetAction(
+//                                onPressed: signOut, child: Text('SignOut')),
+//                          ],
+//                          cancelButton: CupertinoActionSheetAction(
+//                              onPressed: () {
+//                                Navigator.pop(context);
+//                              },
+//                              child: Text('Cancel'))));
+//                },
+//              )
             ],
             backgroundColor: Colors.grey,
           ),
           body: HomePage(),
-          floatingActionButton: FloatingActionButton(
-              child: Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => PostAdd()));
-              }),
+//          floatingActionButton: FloatingActionButton(
+//              child: Icon(Icons.add),
+//              onPressed: ),
+          bottomNavigationBar: SwipeDetector(
+            onSwipeUp: () {
+              showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) => CupertinoActionSheet(
+                      title: const Text('Pilihan menu'),
+                      actions: <Widget>[
+                        CupertinoActionSheetAction(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => About()));
+                            },
+                            child: Text('Tentang Kami')),
+                        CupertinoActionSheetAction(
+                            onPressed: signOut, child: Text('SignOut')),
+                      ],
+                      cancelButton: CupertinoActionSheetAction(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Cancel'))));
+            },
+            child: BottomAppBar(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => PostAdd()));
+                      }),
+                ],
+              ),
+            ),
+          ),
         );
     }
   }
