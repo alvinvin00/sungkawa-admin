@@ -1,11 +1,14 @@
+import 'package:Sungkawa/main.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:async';
 
-import 'package:Sungkawa/pages/main.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+
+
 
 class Login extends StatelessWidget {
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
@@ -21,32 +24,27 @@ class Login extends StatelessWidget {
     final FirebaseUser user = await _auth.signInWithCredential(credential);
     print("Signed In " + user.displayName);
     return user;
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return new Scaffold(
       body: new Padding(
         padding: const EdgeInsets.all(20.0),
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            new Text(
-              'Sungkawa',
-              style: TextStyle(fontSize: 40.0),
-              textAlign: TextAlign.center,
-            ),
+            new Text('Sungkawa', style: TextStyle(fontSize: 40.0), textAlign: TextAlign.center,),
+
             new RaisedButton(
               onPressed: () {
                 _handleSignIn()
                     .then((FirebaseUser user) => print(user))
-                    .catchError((e) => print('Error: $e'))
+                    .catchError((e) => print('Error: $e'                                                                                                                                                                                                                                                                                                 ))
                     .whenComplete(() {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DashboardScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardScreen()));
                 });
               },
               child: new Text(
@@ -55,6 +53,7 @@ class Login extends StatelessWidget {
               ),
               color: Colors.blue,
             ),
+
             new Padding(padding: const EdgeInsets.all(10.0)),
           ],
         ),

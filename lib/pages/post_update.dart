@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:Sungkawa/model/person.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+//import 'package:sung/utilities/firebase_database_util.dart';
 
 class UpdatePost extends StatefulWidget {
   final Person person;
@@ -20,46 +21,48 @@ class UpdatePost extends StatefulWidget {
 }
 
 class _UpdatePostState extends State<UpdatePost> {
-  String userId, nama, usia, alamat, lokasiSemayam, keterangan, tempatMakam;
-  double _progress;
+  String userId;
+
+  String nama,
+      umur,
+      alamat,
+      lokasiDisemayamkan,
+      tanggalMeninggal,
+      keterangan,
+      tempatDimakamkan,
+      tanggalSemayam,
+      waktu_semayam;
   bool isChanged = false;
-  var postRef;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    postRef = FirebaseDatabase.instance
-        .reference()
-        .child('posts')
-        .child(widget.person.key);
-    _prosesi = widget.person.prosesi;
-
-    tanggalSemayam = dateFormat.parse(widget.person.tanggalSemayam);
-    tanggalMeninggal = dateFormat.parse(widget.person.tanggalMeninggal);
-    waktuSemayam = timeFormat.parse(widget.person.waktuSemayam);
-
+    _processType = widget.person.prosesi;
+    t_semayam = DateFormat('dd/MM/yyyy').parse(widget.person.tanggalSemayam);
+    t_meninggal =
+        DateFormat('dd/MM/yyyy').parse(widget.person.tanggalMeninggal);
+    waktuSemayam = DateFormat('hh.mm.a').parse(widget.person.waktuSemayam);
     nama = widget.person.nama;
-    usia = widget.person.usia;
+    umur = widget.person.umur;
     alamat = widget.person.alamat;
-    userId = widget.person.userId;
     keterangan = widget.person.keterangan;
-    lokasiSemayam = widget.person.lokasiSemayam;
-    tempatMakam = widget.person.tempatMakam;
+    print(waktuSemayam);
   }
 
-  DateTime tanggalSemayam, waktuSemayam, tanggalMeninggal;
+  DateTime t_semayam, waktuSemayam, t_meninggal;
 
-  var radioValue;
+  var radiovalue;
+  DateTime date, time;
   int timestamp;
   File image;
-  var imageFile, _prosesi;
+  var imagefile, _processType;
   bool isLoading = false;
-  bool isUploading = false;
-  final dateFormat = DateFormat('dd/MM/yyyy');
-  final timeFormat = DateFormat('hh:mm a');
-  final formKey = GlobalKey<FormState>();
+  String kubur;
+  final dateformat = DateFormat('dd/MM/yyyy');
+  final formats = DateFormat('dd/MM/yyyy');
+  final timeformat = DateFormat('hh.mm.a');
+  final formkey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +73,15 @@ class _UpdatePostState extends State<UpdatePost> {
           IconButton(
             icon: Icon(Icons.check),
             onPressed: () {
+              isLoading = true;
               validateAndSubmit();
             },
           ),
+//          Container(
+//              height: 20,
+//              width: 20,
+//              child:
+//              isLoading == true ? CircularProgressIndicator() : Text('')),
         ],
         backgroundColor: Colors.grey[400],
       ),
@@ -80,17 +89,14 @@ class _UpdatePostState extends State<UpdatePost> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: formKey,
+          key: formkey,
           child: new ListView(
             children: <Widget>[
-              isChanged == false
-                  ? CachedNetworkImage(
-                      imageUrl: widget.person.photo,
-                      placeholder: (context, url) =>
-                          CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => Icon(Icons.warning),
-                    )
-                  : buildImage(),
+              CachedNetworkImage(
+                imageUrl: widget.person.photo,
+                placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Icon(Icons.warning),
+              ),
               SizedBox(
                 height: 5,
               ),
@@ -110,7 +116,12 @@ class _UpdatePostState extends State<UpdatePost> {
                     ),
                     onPressed: getImageGallery,
                   ),
-                  buildProgressIndicator()
+                  Container(
+                      height: 20,
+                      width: 20,
+                      child: isLoading == true
+                          ? CircularProgressIndicator()
+                          : Text('')),
                 ],
               ),
               SizedBox(
@@ -120,7 +131,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 initialValue: nama,
                 onSaved: (value) => nama = value,
                 validator: (value) =>
-                    value.isEmpty ? 'Nama tidak boleh kosong' : null,
+                value.isEmpty ? 'Nama tidak boleh kosong' : null,
                 decoration: InputDecoration(
                   labelText: 'Nama',
                   alignLabelWithHint: true,
@@ -133,10 +144,10 @@ class _UpdatePostState extends State<UpdatePost> {
                 textCapitalization: TextCapitalization.words,
               ),
               TextFormField(
-                initialValue: usia,
+                initialValue: umur,
                 validator: (value) =>
-                    value.isEmpty ? 'Umur tidak boleh kosong' : null,
-                onSaved: (value) => usia = value,
+                value.isEmpty ? 'Umur tidak boleh kosong' : null,
+                onSaved: (value) => umur = value,
                 decoration: InputDecoration(
                   labelText: 'Usia',
                   hintText: 'Tulis usia dalam satuan tahun',
@@ -151,25 +162,26 @@ class _UpdatePostState extends State<UpdatePost> {
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
-                initialValue: tanggalMeninggal,
+                initialValue: t_meninggal,
                 inputType: InputType.date,
                 editable: false,
-                format: dateFormat,
-                onSaved: (value) => tanggalMeninggal = value,
+                format: dateformat,
+                onSaved: (value) => t_meninggal = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Meninggal',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
+//              onChanged: (dt) => setState(() => date = dt),
               ),
               SizedBox(
                 height: 10.0,
               ),
               TextFormField(
-                initialValue: alamat,
+                initialValue: widget.person.alamat,
                 validator: (value) =>
-                    value.isEmpty ? 'Alamat tidak boleh kosong' : null,
+                value.isEmpty ? 'Alamat tidak boleh kosong' : null,
                 decoration: InputDecoration(
                   labelText: 'Alamat',
                   alignLabelWithHint: true,
@@ -189,9 +201,9 @@ class _UpdatePostState extends State<UpdatePost> {
                   ),
                   new Radio(
                     value: 'Dimakamkan',
-                    onChanged: handleProsesi,
+                    onChanged: handleProcessType,
                     activeColor: Colors.green,
-                    groupValue: _prosesi,
+                    groupValue: _processType,
                   ),
                   Text('Dimakamkan'),
                   SizedBox(
@@ -199,9 +211,9 @@ class _UpdatePostState extends State<UpdatePost> {
                   ),
                   new Radio(
                     value: 'Dikremasi',
-                    onChanged: handleProsesi,
+                    onChanged: handleProcessType,
                     activeColor: Colors.green,
-                    groupValue: _prosesi,
+                    groupValue: _processType,
                   ),
                   Text('Dikremasi'),
                 ],
@@ -210,9 +222,9 @@ class _UpdatePostState extends State<UpdatePost> {
                 height: 8.0,
               ),
               TextFormField(
-                initialValue: lokasiSemayam,
+                initialValue: widget.person.lokasi,
                 validator: (value) =>
-                    value.isEmpty ? 'Lokasi tidak boleh kosong' : null,
+                value.isEmpty ? 'Lokasi tidak boleh kosong' : null,
                 decoration: InputDecoration(
                   labelText: 'Tempat disemayamkan',
                   alignLabelWithHint: true,
@@ -222,14 +234,13 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onSaved: (value) => lokasiSemayam = value,
+                onSaved: (value) => lokasiDisemayamkan = value,
                 textCapitalization: TextCapitalization.words,
               ),
               TextFormField(
-                initialValue: tempatMakam,
-                validator: (value) => value.isEmpty
-                    ? 'Tempat dimakamkan tidak boleh kosong'
-                    : null,
+                initialValue: widget.person.tempatDimakamkan,
+                validator: (value) =>
+                value.isEmpty ? 'Tempat dimakamkan tidak boleh kosong' : null,
                 decoration: InputDecoration(
                   labelText: 'Tempat Pemakaman/Kremasi',
                   alignLabelWithHint: true,
@@ -239,24 +250,22 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onSaved: (value) => tempatMakam = value,
+                onSaved: (value) => tempatDimakamkan = value,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
                 inputType: InputType.date,
                 editable: false,
-                format: dateFormat,
-                initialValue: tanggalSemayam,
-                validator: (value) => value.isBefore(tanggalMeninggal)
-                    ? 'Tanggal Prosesi harus sesudah Tanggal Meninggal'
-                    : null,
-                onSaved: (value) => tanggalSemayam = value,
+                format: dateformat,
+                initialValue: t_semayam,
+                onSaved: (value) => t_semayam = value,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Pemakaman/Kremasi',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
+//              onChanged: (dt) => setState(() => date = dt),
               ),
               SizedBox(
                 height: 10.0,
@@ -264,7 +273,7 @@ class _UpdatePostState extends State<UpdatePost> {
               DateTimePickerFormField(
                 inputType: InputType.time,
                 editable: false,
-                format: timeFormat,
+                format: timeformat,
                 initialValue: waktuSemayam,
                 onSaved: (value) => waktuSemayam = value,
                 decoration: InputDecoration(
@@ -273,14 +282,15 @@ class _UpdatePostState extends State<UpdatePost> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
+//              onChanged: (dt) => setState(() => time = dt),
               ),
               SizedBox(
                 height: 10.0,
               ),
               TextFormField(
-                initialValue: keterangan,
+                initialValue: widget.person.keterangan,
                 validator: (value) =>
-                    value.isEmpty ? 'Keterangan tidak boleh kosong' : null,
+                value.isEmpty ? 'Keterangan tidak boleh kosong' : null,
                 decoration: InputDecoration(
                   labelText: 'Keterangan',
                   hintText: 'Tulis keterangan...',
@@ -294,6 +304,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 onSaved: (value) => keterangan = value,
                 textCapitalization: TextCapitalization.sentences,
               ),
+              imagefile != null ? buildImage() : Text(''),
             ],
           ),
         ),
@@ -301,18 +312,21 @@ class _UpdatePostState extends State<UpdatePost> {
     );
   }
 
-  void handleProsesi(value) {
+  void handleProcessType(value) {
     print('Process type : $value');
     setState(() {
-      _prosesi = value;
+      _processType = value;
     });
   }
 
   Widget buildImage() {
     return Container(
       child: Image.file(
-        imageFile,
-        width: MediaQuery.of(context).size.width,
+        imagefile,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         height: 240,
         fit: BoxFit.fitWidth,
       ),
@@ -321,10 +335,10 @@ class _UpdatePostState extends State<UpdatePost> {
 
   void getImageGallery() async {
     try {
-      imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-      print('imageFile : $imageFile');
+      imagefile = await ImagePicker.pickImage(source: ImageSource.gallery);
+      print('imageFile : $imagefile');
       setState(() {
-        image = imageFile;
+        image = imagefile;
         isChanged = true;
       });
     } catch (e) {
@@ -334,10 +348,10 @@ class _UpdatePostState extends State<UpdatePost> {
 
   void getImageCamera() async {
     try {
-      imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
-      print('imageFile : $imageFile');
+      imagefile = await ImagePicker.pickImage(source: ImageSource.camera);
+      print('imageFile : $imagefile');
       setState(() {
-        image = imageFile;
+        image = imagefile;
         isChanged = true;
       });
     } catch (e) {
@@ -346,44 +360,76 @@ class _UpdatePostState extends State<UpdatePost> {
   }
 
   Future<String> uploadImage(var imageFile) async {
+    timestamp = DateTime
+        .now()
+        .millisecondsSinceEpoch;
     String fileName = timestamp.toString() + 'jpg';
     StorageReference storageRef =
-        FirebaseStorage.instance.ref().child('image').child(fileName);
+    FirebaseStorage.instance.ref().child('image').child(fileName);
     StorageUploadTask task = storageRef.putFile(image);
-
-    task.events.listen((event) {
-      setState(() {
-        isUploading = true;
-        _progress = event.snapshot.bytesTransferred.toDouble() /
-            event.snapshot.totalByteCount.toDouble();
-      });
-    });
-
     var downloadUrl = await (await task.onComplete).ref.getDownloadURL();
     String _url = downloadUrl.toString();
     return _url;
   }
 
-  void updatePost() async {
+//  void update(Person person) {
+//    setState(() {
+//      databaseUtil.updateUser(person);
+//    });
+//  }
+
+  void UpdatePost() async {
     print('Mencoba Update Posting');
-    timestamp = DateTime.now().millisecondsSinceEpoch;
 
     if (isChanged == true) {
       uploadImage(image).then((_url) {
-        pushData(_url);
+        var postRef = FirebaseDatabase.instance
+            .reference()
+            .child('posts')
+            .child('-LbxeQpqZFHp4vc0uMJL');
+
+        try {
+          print('Updating ....');
+          postRef.update({
+            'nama': nama,
+            'usia': umur,
+            'photo': _url,
+            'timestamp': timestamp,
+            'userId': userId,
+            'tanggalMeninggal': tanggalMeninggal.toString(),
+            'alamat': alamat,
+            'prosesi': _processType.toString(),
+            'tempatDimakamkan': tempatDimakamkan,
+            'tanggalSemayam': tanggalSemayam.toString(),
+            'lokasiSemayam': lokasiDisemayamkan,
+            'waktuSemayam': waktuSemayam.toString(),
+            'keterangan': keterangan
+          }).whenComplete(() {
+            print('Updating selesai.......');
+            Navigator.pop(context);
+          });
+        } catch (e) {
+          print('error : $e');
+          isLoading = false;
+        }
       });
-    } else {
-      setState(() {
-        isLoading = true;
-      });
-      pushData(widget.person.photo);
     }
   }
 
   bool validateAndSave() {
-    final form = formKey.currentState;
-
+    final form = formkey.currentState;
+    print('Form Key : $formkey');
+    print('Form ' + form.toString());
     form.save();
+    print('Nama $nama');
+    print('Umur $umur');
+    print('Alamat $alamat');
+    print('Keterangan $keterangan');
+    print('tanggal meninggal $t_meninggal');
+    print('tanggal disemayamkan $t_semayam');
+    print('tempat disemayamkan $tempatDimakamkan');
+    print('jam kre $waktuSemayam');
+    print('status pemakaman : $_processType.toString()');
 
     if (form.validate()) {
       print('Posting valid');
@@ -397,51 +443,14 @@ class _UpdatePostState extends State<UpdatePost> {
   void validateAndSubmit() async {
     if (validateAndSave()) {
       try {
-        updatePost();
+        FirebaseUser user = await FirebaseAuth.instance.currentUser();
+        UpdatePost();
       } catch (e) {
         print('Error $e');
       }
     } else {
-      formKey.currentState.reset();
+      formkey.currentState.reset();
     }
   }
 
-  void pushData(_url) {
-    try {
-      print('Updating ....');
-      postRef.update({
-        'nama': nama,
-        'usia': usia,
-        'photo': _url,
-        'timestamp': timestamp,
-        'userId': userId,
-        'tanggalMeninggal': dateFormat.format(tanggalMeninggal),
-        'alamat': alamat,
-        'prosesi': _prosesi.toString(),
-        'tempatMakam': tempatMakam,
-        'tanggalSemayam': dateFormat.format(tanggalSemayam),
-        'lokasiSemayam': lokasiSemayam,
-        'waktuSemayam': timeFormat.format(waktuSemayam),
-        'keterangan': keterangan
-      }).whenComplete(() {
-        print('Updating selesai.......');
-        Navigator.pop(context);
-      });
-    } catch (e) {
-      print('error : $e');
-    }
-  }
-
-  Widget buildProgressIndicator() {
-    if (isUploading == true)
-      return Expanded(
-          child: LinearProgressIndicator(
-        value: _progress,
-      ));
-    else if (isLoading == true)
-      return Container(
-          width: 20, height: 20, child: CircularProgressIndicator());
-    else
-      return SizedBox();
-  }
 }

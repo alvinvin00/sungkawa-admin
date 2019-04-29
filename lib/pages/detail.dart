@@ -1,6 +1,6 @@
 import 'package:Sungkawa/model/person.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class Detail extends StatefulWidget {
   final Person person;
@@ -62,7 +62,7 @@ class _DetailState extends State<Detail> {
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    "Usia : " + widget.person.usia + " tahun",
+                    "Umur : " + widget.person.umur + " tahun",
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
@@ -76,7 +76,7 @@ class _DetailState extends State<Detail> {
                     color: Colors.green,
                   ),
                   Text(
-                    'Disemayamkan di ' + widget.person.lokasiSemayam,
+                    'Disemayamkan di ' + widget.person.lokasi,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
@@ -89,9 +89,9 @@ class _DetailState extends State<Detail> {
                   Text(
                     widget.person.prosesi +
                         ' di ' +
-                        widget.person.tempatMakam +
+                        widget.person.tempatDimakamkan +
                         ' pada ' +
-                        widget.person.tanggalSemayam +
+                        widget.person.waktuSemayam +
                         ' pukul ' +
                         widget.person.waktuSemayam,
                     style: TextStyle(fontSize: 16.0),
