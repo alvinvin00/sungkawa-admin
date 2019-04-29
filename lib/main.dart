@@ -10,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:swipedetector/swipedetector.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -58,7 +57,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     getCurrentUser().then((userId) {
       setState(() {
         _authStatus =
-        userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
+            userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
       });
     });
   }
@@ -82,35 +81,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       case AuthStatus.signedIn:
         return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'Sungkawa',
-                textAlign: TextAlign.center,
-              ),
-              actions: <Widget>[
-                PopupMenuButton(
-                    onSelected: selectedAction,
-                    itemBuilder: (BuildContext context) =>
-                    <PopupMenuEntry<Pilihan>>[
-                      const PopupMenuItem(
-                        child: Text('Tentang Kami'),
-                        value: Pilihan.about,
-                      ),
-                      const PopupMenuItem(
-                        child: Text('SignOut'),
-                        value: Pilihan.signOut,
-                      )
-                    ])
-              ],
-              backgroundColor: Colors.grey,
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+              'Sungkawa',
+              textAlign: TextAlign.center,
             ),
-            body: HomePage(),
-            bottomNavigationBar: SwipeDetector(onSwipeUp: () {
-              print('on Swipe Up');
-              showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) =>
-                      CupertinoActionSheet(
+            actions: <Widget>[
+              FlatButton(
+                child: Text(
+                  'Options',
+                  style: TextStyle(color: Colors.blue[700]),
+                ),
+                onPressed: () {
+                  showCupertinoModalPopup(
+                      context: context,
+                      builder: (context) => CupertinoActionSheet(
                           title: const Text('Pilihan menu'),
                           actions: <Widget>[
                             CupertinoActionSheetAction(
@@ -129,22 +115,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 Navigator.pop(context);
                               },
                               child: Text('Cancel'))));
-            },
-                child: BottomAppBar(
-                child: Row(mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                IconButton(
-                icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PostAdd()),
-              );
-            })],
-    ),
-    ),
-    ),
-    );
+                },
+              )
+            ],
+            backgroundColor: Colors.grey,
+          ),
+          body: HomePage(),
+          floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PostAdd()));
+              }),
+        );
     }
   }
 
