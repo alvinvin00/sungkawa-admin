@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:Sungkawa/model/person.dart';
+import 'package:Sungkawa/model/post.dart';
 
 class Utilities {
   var now = new DateTime.now();

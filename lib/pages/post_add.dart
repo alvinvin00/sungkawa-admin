@@ -1,13 +1,13 @@
-import 'dart:io';
 import 'dart:async';
-import 'package:Sungkawa/main.dart';
+import 'dart:io';
+
+import 'package:Sungkawa/utilities/crud.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 class PostAdd extends StatefulWidget {
   @override
@@ -16,35 +16,28 @@ class PostAdd extends StatefulWidget {
 
 class _PostAddState extends State<PostAdd> {
   String userId;
-  InputType inputType = InputType.date;
-  bool editable = true;
   DateTime date = DateTime.now();
   int timestamp;
-  final namaController = TextEditingController();
-  final umurController = TextEditingController();
-  final alamatController = TextEditingController();
-  final locationController = TextEditingController();
-  final tanggalMeninggalController = TextEditingController();
-  final lokasiSemayamController = TextEditingController();
-  final keluarga = TextEditingController();
-  final tempatsemyamController = TextEditingController();
-  final keteranganController = TextEditingController();
-  final tanggalSemayam = TextEditingController();
-  final tempat_dikebumikan = TextEditingController();
-  final waktuSemayamController = TextEditingController();
-  final dateformat = DateFormat('dd/MM/yyyy');
-  final formats = DateFormat("EEEE, MMMM d, yyyy 'at' h:mma");
-  final timeformat = DateFormat('hh.mm.a');
-  DateTime TanggalMeninggal ;
-  DateTime TanggalSemayam;
-  DateTime waktu_semayam;
+
+  final dateFormat = DateFormat('dd/MM/yyyy');
+  final format = DateFormat("EEEE, MMMM d, yyyy 'at' h:mma");
+  final timeFormat = DateFormat('HH:mm');
 
   File image;
-  var imagefile, _processType;
+  var imageFile, _processType;
   bool isLoading = false;
-  String kubur;
 
-  var radiovalue;
+  CRUD crud = new CRUD();
+
+  String nama;
+  String umur;
+  String alamat;
+  String lokasiSemayam;
+  String lokasi;
+  String keterangan;
+  DateTime tanggalMeninggal;
+  DateTime tanggalSemayam;
+  DateTime waktuSemayam;
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +53,6 @@ class _PostAddState extends State<PostAdd> {
             color: Colors.black,
             icon: Icon(Icons.check),
             onPressed: () {
-              setState(() {
-                isLoading = true;
-              });
               savePost();
             },
           )
@@ -93,7 +83,7 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                controller: namaController,
+                onChanged: (value) => this.nama = value,
                 textCapitalization: TextCapitalization.words,
               ),
               TextField(
@@ -108,21 +98,20 @@ class _PostAddState extends State<PostAdd> {
                 keyboardType: TextInputType.number,
                 maxLength: 3,
                 maxLines: 1,
-                controller: umurController,
+                onChanged: (value) => this.umur = value,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
                 inputType: InputType.date,
                 editable: false,
-                format: dateformat,
-                controller: tanggalMeninggalController,
+                format: dateFormat,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Meninggal',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                onChanged: (dt) => setState(() => date = dt),
+                onChanged: (value) => this.tanggalMeninggal = value,
               ),
               SizedBox(
                 height: 10.0,
@@ -137,7 +126,7 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                controller: alamatController,
+                onChanged: (value) => this.alamat = value,
                 textCapitalization: TextCapitalization.words,
               ),
               Row(
@@ -164,8 +153,6 @@ class _PostAddState extends State<PostAdd> {
                   Text('Dikremasi'),
                 ],
               ),
-
-
               SizedBox(
                 height: 8.0,
               ),
@@ -179,7 +166,7 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                controller: lokasiSemayamController,
+                onChanged: (value) => this.lokasiSemayam = value,
                 textCapitalization: TextCapitalization.words,
               ),
               TextField(
@@ -192,21 +179,20 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                controller: locationController,
+                onChanged: (value) => this.lokasi = value,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
                 inputType: InputType.date,
                 editable: false,
-                format: dateformat,
-                controller: tanggalSemayam,
+                format: dateFormat,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Pemakaman/Kremasi',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                onChanged: (dt) => setState(() => date = dt),
+                onChanged: (value) => this.tanggalSemayam = value,
               ),
               SizedBox(
                 height: 8.0,
@@ -214,15 +200,14 @@ class _PostAddState extends State<PostAdd> {
               DateTimePickerFormField(
                 inputType: InputType.time,
                 editable: false,
-                format: timeformat,
-                controller: waktuSemayamController,
+                format: timeFormat,
                 decoration: InputDecoration(
                   labelText: 'Jam Pemakaman/Kremasi',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                onChanged: (dt) => setState(() => date = dt),
+                onChanged: (value) => this.waktuSemayam = value,
               ),
               SizedBox(
                 height: 10.0,
@@ -238,7 +223,7 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 200,
                 maxLines: 6,
-                controller: keteranganController,
+                onChanged: (value) => this.keterangan = value,
                 textCapitalization: TextCapitalization.sentences,
               ),
               Row(
@@ -265,7 +250,7 @@ class _PostAddState extends State<PostAdd> {
                           : Text('')),
                 ],
               ),
-              imagefile != null ? buildImage() : Text(''),
+              imageFile != null ? buildImage() : Text(''),
             ],
           ),
         )
@@ -276,7 +261,7 @@ class _PostAddState extends State<PostAdd> {
   Widget buildImage() {
     return Container(
       child: Image.file(
-        imagefile,
+        imageFile,
         width: MediaQuery.of(context).size.width,
         height: 240,
         fit: BoxFit.fitWidth,
@@ -286,10 +271,10 @@ class _PostAddState extends State<PostAdd> {
 
   void getImageGallery() async {
     try {
-      imagefile = await ImagePicker.pickImage(source: ImageSource.gallery);
-      print('imageFile : $imagefile');
+      imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+      print('imageFile : $imageFile');
       setState(() {
-        image = imagefile;
+        image = imageFile;
       });
     } catch (e) {
       print('Error $e');
@@ -298,10 +283,10 @@ class _PostAddState extends State<PostAdd> {
 
   void getImageCamera() async {
     try {
-      imagefile = await ImagePicker.pickImage(source: ImageSource.camera);
-      print('imageFile : $imagefile');
+      imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+      print('imageFile : $imageFile');
       setState(() {
-        image = imagefile;
+        image = imageFile;
       });
     } catch (e) {
       print('Error $e');
@@ -326,47 +311,37 @@ class _PostAddState extends State<PostAdd> {
       });
     });
     if (image != null) {
+      setState(() {
+        isLoading = true;
+      });
       uploadImage(image).then((_url) {
-        var postRef = FirebaseDatabase.instance.reference().child('posts');
-
         try {
-          print('Posting ....');
-          postRef.push().set({
-            'nama': namaController.text,
-            'usia': umurController.text,
+          crud.addPost({
+            'nama': this.nama,
+            'umur': this.umur,
             'photo': _url,
-            'timestamp': timestamp,
-            'userId': userId,
-            'tanggal_meninggal': tanggalMeninggalController.text,
-            'alamat': alamatController.text,
-            'prosesi': _processType.toString(),
-            'tempatDimakamkan': locationController.text,
-            'tanggalSemayam': tanggalSemayam.text,
-            'lokasiSemayam': lokasiSemayamController.text,
-            'waktuSemayam': waktuSemayamController.text,
-            'keterangan': keteranganController.text
-
-          }).whenComplete(() {
-            print('Posting selesai.......');
-            Navigator.pop(context,
-                MaterialPageRoute(builder: (context) => DashboardScreen()));
-            namaController.clear();
-            locationController.clear();
-            alamatController.clear();
-            waktuSemayamController.clear();
-            keteranganController.clear();
-            tanggalMeninggalController.clear();
-            umurController.clear();
-            tanggalMeninggalController.clear();
-            lokasiSemayamController.clear();
-          });
+            'timestamp': this.timestamp,
+            'userId': this.userId,
+            'tanggalMeninggal': dateFormat.format(this.tanggalMeninggal),
+            'alamat': this.alamat,
+            'prosesi': this._processType.toString(),
+            'tempatDimakamkan': this.lokasi,
+            'tanggalSemayam': dateFormat.format(this.tanggalSemayam),
+            'lokasiSemayam': this.lokasiSemayam,
+            'waktuSemayam': timeFormat.format(this.waktuSemayam),
+            'keterangan': this.keterangan
+          }).then((result) => Navigator.pop(context));
         } catch (e) {
-          print('error : $e');
-          isLoading = false;
+          Scaffold.of(context).showSnackBar(SnackBar(content: Text(e)));
+          print(e);
+          setState(() {
+            isLoading = false;
+          });
         }
       });
     } else {
-      isLoading = false;
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text('Gambar harus ada')));
     }
   }
 
@@ -374,7 +349,6 @@ class _PostAddState extends State<PostAdd> {
     print('Process type : $value');
     setState(() {
       _processType = value;
-
     });
   }
 

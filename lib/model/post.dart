@@ -1,6 +1,6 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Person {
+class Post {
   String _key;
   String _photo;
   String _nama,
@@ -15,7 +15,7 @@ class Person {
       _waktuSemayam;
   int _timestamp;
 
-  Person(
+  Post(
       this._key,
       this._photo,
       this._alamat,
@@ -56,21 +56,19 @@ class Person {
 
   int get timestamp => _timestamp;
 
-  Person.fromsnapShot(DataSnapshot snapshot) {
-    _key = snapshot.key;
-    _nama = snapshot.value["nama"];
-    _umur = snapshot.value["usia"];
-    _photo = snapshot.value['photo'];
-    _alamat = snapshot.value['alamat'];
-    _tanggalMeninggal = snapshot.value["tanggalMeninggal"];
-    _prosesi = snapshot.value["prosesi"];
-    _lokasi = snapshot.value["lokasiSemayam"];
-    _tempatDimakamkan = snapshot.value["tempatDimakamkan"];
-    _tanggalSemayam = snapshot.value["tanggalSemayam"];
-    _waktuSemayam = snapshot.value["waktuSemayam"];
-    _keterangan = snapshot.value["keterangan"];
-    _timestamp = snapshot.value['timestamp'];
+  Post.fromSnapshot(DocumentSnapshot snapshot) {
+    _key = snapshot.documentID;
+    _nama = snapshot.data["nama"];
+    _umur = snapshot.data["umur"];
+    _photo = snapshot.data['photo'];
+    _alamat = snapshot.data['alamat'];
+    _tanggalMeninggal = snapshot.data["tanggalMeninggal"];
+    _prosesi = snapshot.data["prosesi"];
+    _lokasi = snapshot.data["lokasiSemayam"];
+    _tempatDimakamkan = snapshot.data["tempatDimakamkan"];
+    _tanggalSemayam = snapshot.data["tanggalSemayam"];
+    _waktuSemayam = snapshot.data["waktuSemayam"];
+    _keterangan = snapshot.data["keterangan"];
+    _timestamp = snapshot.data['timestamp'];
   }
-
-
 }

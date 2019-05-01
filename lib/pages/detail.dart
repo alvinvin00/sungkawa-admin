@@ -1,11 +1,11 @@
-import 'package:Sungkawa/model/person.dart';
-import 'package:flutter/material.dart';
+import 'package:Sungkawa/model/post.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
 class Detail extends StatefulWidget {
-  final Person person;
+  Detail(this.post);
 
-  Detail(this.person);
+  final Post post;
 
   @override
   _DetailState createState() => _DetailState();
@@ -24,10 +24,10 @@ class _DetailState extends State<Detail> {
             pinned: true,
             snap: true,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(widget.person.nama),
+              title: Text(widget.post.nama),
               centerTitle: true,
               background: CachedNetworkImage(
-                imageUrl: widget.person.photo,
+                imageUrl: widget.post.photo,
                 placeholder: (context, url) => CircularProgressIndicator(),
                 errorWidget: (context, url, error) => Icon(Icons.warning),
                 fit: BoxFit.cover,
@@ -54,46 +54,46 @@ class _DetailState extends State<Detail> {
                     height: 30,
                   ),
                   Text(
-                    "Nama : " + widget.person.nama,
+                    "Nama : " + widget.post.nama,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    "Alamat : " + widget.person.alamat,
+                    "Alamat : " + widget.post.alamat,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    "Umur : " + widget.person.umur + " tahun",
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Divider(
-                    color: Colors.green,
-                  ),
-                  Text(
-                    "Tanggal Meninggal : " + widget.person.tanggalMeninggal,
+                    "Umur : " + widget.post.umur + " tahun",
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
                     color: Colors.green,
                   ),
                   Text(
-                    'Disemayamkan di ' + widget.person.lokasi,
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    "Tanggal disemayamkan : " + widget.person.tanggalSemayam,
+                    "Tanggal Meninggal : " + widget.post.tanggalMeninggal,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
                     color: Colors.green,
                   ),
                   Text(
-                    widget.person.prosesi +
+                    'Disemayamkan di ' + widget.post.lokasi,
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  Text(
+                    "Tanggal disemayamkan : " + widget.post.tanggalSemayam,
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  Divider(
+                    color: Colors.green,
+                  ),
+                  Text(
+                    widget.post.prosesi +
                         ' di ' +
-                        widget.person.tempatDimakamkan +
+                        widget.post.tempatDimakamkan +
                         ' pada ' +
-                        widget.person.waktuSemayam +
+                        widget.post.waktuSemayam +
                         ' pukul ' +
-                        widget.person.waktuSemayam,
+                        widget.post.waktuSemayam,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(

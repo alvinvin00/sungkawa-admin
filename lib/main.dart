@@ -88,43 +88,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               'Sungkawa',
               textAlign: TextAlign.center,
             ),
-            actions: <Widget>[
-//              FlatButton(
-//                child: Text(
-//                  'Options',
-//                  style: TextStyle(color: Colors.blue[700]),
-//                ),
-//                onPressed: () {
-//                  showCupertinoModalPopup(
-//                      context: context,
-//                      builder: (context) => CupertinoActionSheet(
-//                          title: const Text('Pilihan menu'),
-//                          actions: <Widget>[
-//                            CupertinoActionSheetAction(
-//                                onPressed: () {
-//                                  Navigator.push(
-//                                      context,
-//                                      MaterialPageRoute(
-//                                          builder: (context) => About()));
-//                                },
-//                                child: Text('Tentang Kami')),
-//                            CupertinoActionSheetAction(
-//                                onPressed: signOut, child: Text('SignOut')),
-//                          ],
-//                          cancelButton: CupertinoActionSheetAction(
-//                              onPressed: () {
-//                                Navigator.pop(context);
-//                              },
-//                              child: Text('Cancel'))));
-//                },
-//              )
-            ],
             backgroundColor: Colors.grey,
           ),
           body: HomePage(),
-//          floatingActionButton: FloatingActionButton(
-//              child: Icon(Icons.add),
-//              onPressed: ),
           bottomNavigationBar: SwipeDetector(
             onSwipeUp: () {
               showCupertinoModalPopup(
