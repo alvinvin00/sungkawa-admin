@@ -1,10 +1,10 @@
 import 'package:Sungkawa/model/post.dart';
 import 'package:Sungkawa/pages/detail.dart';
-import 'package:Sungkawa/pages/post_update.dart';
 import 'package:Sungkawa/utilities/crud.dart';
 import 'package:Sungkawa/utilities/utilities.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -56,12 +56,31 @@ class _HomePageState extends State<HomePage> {
                                           builder: (context) => Detail(post)));
                                 },
                                 onLongPress: () {
-                                  print('Buka update');
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              UpdatePost(post)));
+                                  showCupertinoModalPopup(
+                                      context: context,
+                                      builder: (context) =>
+                                          CupertinoActionSheet(
+                                            title: Text(
+                                                'Apa yang ingin anda lakukan?'),
+                                            actions: <Widget>[
+                                              CupertinoActionSheetAction(
+                                                child: Text('Ubah'),
+                                              ),
+                                              CupertinoActionSheetAction(
+                                                child: Text('Hapus'),
+                                              )
+                                            ],
+                                            cancelButton:
+                                                CupertinoActionSheetAction(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text(
+                                                      'Batal',
+                                                      style: TextStyle(
+                                                          color: Colors.red),
+                                                    )),
+                                          ));
                                 },
                                 child: Card(
                                   shape: RoundedRectangleBorder(
@@ -111,7 +130,8 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         child: Text(
                                           snapshot.data.documents[index]
-                                                  .data['umur'].toString() +
+                                                  .data['umur']
+                                                  .toString() +
                                               ' tahun',
                                           style: TextStyle(
                                             fontSize: 14.0,

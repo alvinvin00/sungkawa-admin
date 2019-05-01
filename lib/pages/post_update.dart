@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:Sungkawa/model/post.dart';
 import 'package:Sungkawa/utilities/crud.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -37,6 +36,7 @@ class _UpdatePostState extends State<UpdatePost> {
     umur = widget.post.umur;
     alamat = widget.post.alamat;
     lokasi = widget.post.lokasi;
+    _processType = widget.post.prosesi;
     keterangan = widget.post.keterangan;
     tempatDimakamkan = widget.post.tempatDimakamkan;
     tanggalMeninggal = dateFormat.parse(widget.post.tanggalMeninggal);
@@ -44,6 +44,7 @@ class _UpdatePostState extends State<UpdatePost> {
     waktuSemayam = timeFormat.parse(widget.post.waktuSemayam);
   }
 
+  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   String userId;
   DateTime date = DateTime.now();
   int timestamp;
@@ -86,13 +87,14 @@ class _UpdatePostState extends State<UpdatePost> {
 
   ListView buildFormField() {
     return ListView(
+      key: _formKey,
       padding: EdgeInsets.only(top: 8.0),
       children: <Widget>[
         Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              TextField(
+              TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Nama',
                   alignLabelWithHint: true,
@@ -102,10 +104,12 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onChanged: (value) => this.nama = value,
+                onSaved: (value) => this.nama = value,
                 textCapitalization: TextCapitalization.words,
+                initialValue: nama,
               ),
-              TextField(
+              TextFormField(
+                initialValue: umur,
                 decoration: InputDecoration(
                   labelText: 'Usia',
                   hintText: 'Tulis usia dalam satuan tahun',
@@ -117,10 +121,11 @@ class _UpdatePostState extends State<UpdatePost> {
                 keyboardType: TextInputType.number,
                 maxLength: 3,
                 maxLines: 1,
-                onChanged: (value) => this.umur = value,
+                onSaved: (value) => this.umur = value,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
+                initialValue: tanggalMeninggal,
                 inputType: InputType.date,
                 editable: false,
                 format: dateFormat,
@@ -130,12 +135,13 @@ class _UpdatePostState extends State<UpdatePost> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                onChanged: (value) => this.tanggalMeninggal = value,
+                onSaved: (value) => this.tanggalMeninggal = value,
               ),
               SizedBox(
                 height: 10.0,
               ),
-              TextField(
+              TextFormField(
+                initialValue: alamat,
                 decoration: InputDecoration(
                   labelText: 'Alamat',
                   alignLabelWithHint: true,
@@ -145,7 +151,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onChanged: (value) => this.alamat = value,
+                onSaved: (value) => this.alamat = value,
                 textCapitalization: TextCapitalization.words,
               ),
               Row(
@@ -175,7 +181,7 @@ class _UpdatePostState extends State<UpdatePost> {
               SizedBox(
                 height: 8.0,
               ),
-              TextField(
+              TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Tempat disemayamkan',
                   alignLabelWithHint: true,
@@ -185,10 +191,10 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onChanged: (value) => this.lokasi = value,
+                onSaved: (value) => this.lokasi = value,
                 textCapitalization: TextCapitalization.words,
               ),
-              TextField(
+              TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Tempat Pemakaman/Kremasi',
                   alignLabelWithHint: true,
@@ -198,7 +204,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onChanged: (value) => this.lokasi = value,
+                onSaved: (value) => this.lokasi = value,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
@@ -211,7 +217,7 @@ class _UpdatePostState extends State<UpdatePost> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                onChanged: (value) => this.tanggalSemayam = value,
+                onSaved: (value) => this.tanggalSemayam = value,
               ),
               SizedBox(
                 height: 8.0,
@@ -226,12 +232,12 @@ class _UpdatePostState extends State<UpdatePost> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                onChanged: (value) => this.waktuSemayam = value,
+                onSaved: (value) => this.waktuSemayam = value,
               ),
               SizedBox(
                 height: 10.0,
               ),
-              TextField(
+              TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Keterangan',
                   hintText: 'Tulis keterangan...',
@@ -242,7 +248,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 200,
                 maxLines: 6,
-                onChanged: (value) => this.keterangan = value,
+                onSaved: (value) => this.keterangan = value,
                 textCapitalization: TextCapitalization.sentences,
               ),
               Row(
@@ -324,6 +330,7 @@ class _UpdatePostState extends State<UpdatePost> {
   }
 
   void savePost() async {
+    _formKey.currentState.save();
     await FirebaseAuth.instance.currentUser().then((user) {
       setState(() {
         userId = user.uid;

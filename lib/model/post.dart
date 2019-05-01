@@ -64,7 +64,7 @@ class Post {
     _alamat = snapshot.data['alamat'];
     _tanggalMeninggal = snapshot.data["tanggalMeninggal"];
     _prosesi = snapshot.data["prosesi"];
-    _lokasi = snapshot.data["lokasiSemayam"];
+    _lokasi = snapshot.data["lokasi"];
     _tempatDimakamkan = snapshot.data["tempatDimakamkan"];
     _tanggalSemayam = snapshot.data["tanggalSemayam"];
     _waktuSemayam = snapshot.data["waktuSemayam"];

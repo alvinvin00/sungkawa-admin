@@ -12,12 +12,18 @@ class CRUD {
   }
 
   getPost() async {
-    return await postRef.getDocuments();
+    return await postRef.orderBy("timestamp", descending: true).getDocuments();
   }
 
-  updatePost(postId, postData){
-    postRef.document(postId).updateData(postData).catchError((e){
+  updatePost(postId, postData) {
+    postRef.document(postId).updateData(postData).catchError((e) {
+      print(e);
+    });
+  }
 
+  deletePost(postId) {
+    postRef.document(postId).delete().catchError((e) {
+      print(e);
     });
   }
 }
