@@ -69,7 +69,8 @@ class _DetailState extends State<Detail> {
                     color: Colors.green,
                   ),
                   Text(
-                    "Tanggal Meninggal : " + widget.post.tanggalMeninggal,
+                    "Tanggal Meninggal : " +
+                        widget.post.tanggalMeninggal.toString(),
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
@@ -80,7 +81,8 @@ class _DetailState extends State<Detail> {
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    "Tanggal disemayamkan : " + widget.post.tanggalSemayam,
+                    "Tanggal disemayamkan : " +
+                        widget.post.tanggalSemayam.toString(),
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
@@ -91,9 +93,9 @@ class _DetailState extends State<Detail> {
                         ' di ' +
                         widget.post.tempatDimakamkan +
                         ' pada ' +
-                        widget.post.waktuSemayam +
+                        widget.post.tanggalSemayam.toString() +
                         ' pukul ' +
-                        widget.post.waktuSemayam,
+                        widget.post.waktuSemayam.toString(),
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(

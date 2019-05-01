@@ -16,8 +16,6 @@ class _HomePageState extends State<HomePage> {
   Utilities util = new Utilities();
   CRUD crud = new CRUD();
 
-  QuerySnapshot posts;
-
   @override
   void initState() {
     // TODO: implement initState
@@ -36,10 +34,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return new Container(
         child: _stream != null
             ? StreamBuilder<QuerySnapshot>(
-                stream: _stream,
+                stream: Firestore.instance.collection('posts').snapshots(),
                 builder: (context, snapshot) {
                   return snapshot.data != null
                       ? ListView.builder(
@@ -83,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                                         child: Row(
                                           children: <Widget>[
                                             Text(
-                                              posts.documents[index]
+                                              snapshot.data.documents[index]
                                                   .data['nama'],
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
@@ -94,7 +92,8 @@ class _HomePageState extends State<HomePage> {
                                               child: SizedBox(),
                                             ),
                                             Text(
-                                              util.convertTimestamp(posts
+                                              util.convertTimestamp(snapshot
+                                                  .data
                                                   .documents[index]
                                                   .data['timestamp']),
                                               style: TextStyle(
@@ -111,7 +110,8 @@ class _HomePageState extends State<HomePage> {
                                           bottom: 10.0,
                                         ),
                                         child: Text(
-                                          posts.documents[index].data['umur'] +
+                                          snapshot.data.documents[index]
+                                                  .data['umur'].toString() +
                                               ' tahun',
                                           style: TextStyle(
                                             fontSize: 14.0,
@@ -125,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                                               CircularProgressIndicator(),
                                           errorWidget: (context, url, error) =>
                                               Icon(Icons.error),
-                                          imageUrl: posts
+                                          imageUrl: snapshot.data
                                               .documents[index].data['photo'],
                                           height: 240.0,
                                           width: double.infinity,

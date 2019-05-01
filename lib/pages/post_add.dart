@@ -25,6 +25,9 @@ class _PostAddState extends State<PostAdd> {
 
   File image;
   var imageFile, _processType;
+
+  var _progress;
+
   bool isLoading = false;
 
   CRUD crud = new CRUD();
@@ -32,7 +35,7 @@ class _PostAddState extends State<PostAdd> {
   String nama;
   String umur;
   String alamat;
-  String lokasiSemayam;
+  String tempatDimakamkan;
   String lokasi;
   String keterangan;
   DateTime tanggalMeninggal;
@@ -166,7 +169,7 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onChanged: (value) => this.lokasiSemayam = value,
+                onChanged: (value) => this.lokasi = value,
                 textCapitalization: TextCapitalization.words,
               ),
               TextField(
@@ -179,7 +182,7 @@ class _PostAddState extends State<PostAdd> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onChanged: (value) => this.lokasi = value,
+                onChanged: (value) => this.tempatDimakamkan = value,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
@@ -242,12 +245,13 @@ class _PostAddState extends State<PostAdd> {
                     ),
                     onPressed: getImageGallery,
                   ),
-                  Container(
-                      height: 20,
-                      width: 20,
-                      child: isLoading == true
-                          ? CircularProgressIndicator()
-                          : Text('')),
+                  Expanded(
+                    child: isLoading == true
+                        ? LinearProgressIndicator(
+                            value: _progress,
+                          )
+                        : Text(''),
+                  ),
                 ],
               ),
               imageFile != null ? buildImage() : Text(''),
@@ -299,6 +303,12 @@ class _PostAddState extends State<PostAdd> {
     StorageReference storageRef =
         FirebaseStorage.instance.ref().child('image').child(fileName);
     StorageUploadTask task = storageRef.putFile(image);
+    task.events.listen((event) {
+      setState(() {
+        _progress = event.snapshot.bytesTransferred.toDouble() /
+            event.snapshot.totalByteCount.toDouble();
+      });
+    });
     var downloadUrl = await (await task.onComplete).ref.getDownloadURL();
     String _url = downloadUrl.toString();
     return _url;
@@ -325,9 +335,9 @@ class _PostAddState extends State<PostAdd> {
             'tanggalMeninggal': dateFormat.format(this.tanggalMeninggal),
             'alamat': this.alamat,
             'prosesi': this._processType.toString(),
-            'tempatDimakamkan': this.lokasi,
+            'lokasi': this.lokasi,
             'tanggalSemayam': dateFormat.format(this.tanggalSemayam),
-            'lokasiSemayam': this.lokasiSemayam,
+            'tempatDimakamkan': this.tempatDimakamkan,
             'waktuSemayam': timeFormat.format(this.waktuSemayam),
             'keterangan': this.keterangan
           }).then((result) => Navigator.pop(context));

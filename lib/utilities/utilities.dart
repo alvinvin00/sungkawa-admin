@@ -18,12 +18,6 @@ class Utilities {
         diff.inHours > 0 && diff.inDays == 0) {
       timeText = format.format(date);
     } else {
-//      if(diff.inDays == 1){
-//        time = diff.inDays.toString() + ' HARI YANG LALU';
-//        }
-//        else{
-//          time = diff.inDays.toString()+ ' HARI YANG LALU';
-//      }
       timeText = diff.inDays.toString() + ' HARI YANG LALU';
     }
     return timeText;
