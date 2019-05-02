@@ -10,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipedetector/swipedetector.dart';
 
 void main() {
@@ -23,14 +22,14 @@ void main() {
 enum Pilihan { about, signOut }
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
-SharedPreferences prefs;
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
-          primarySwatch: Colors.blueGrey,
+          primarySwatch: Colors.green,
           pageTransitionsTheme: PageTransitionsTheme(builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
             TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
@@ -89,47 +88,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
               'Sungkawa',
               textAlign: TextAlign.center,
             ),
-            backgroundColor: Colors.grey,
+            actions: <Widget>[],
+            backgroundColor: Colors.green[800],
           ),
           body: HomePage(),
-          bottomNavigationBar: SwipeDetector(
-            onSwipeUp: () {
-              showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) => CupertinoActionSheet(
-                      title: const Text('Pilihan menu'),
-                      actions: <Widget>[
-                        CupertinoActionSheetAction(
+          floatingActionButton: SwipeDetector(
+              onSwipeUp: () {
+                showCupertinoModalPopup(
+                    context: context,
+                    builder: (context) => CupertinoActionSheet(
+                        title: const Text('Pilihan menu'),
+                        actions: <Widget>[
+                          CupertinoActionSheetAction(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => About()));
+                              },
+                              child: Text('Tentang Kami')),
+                          CupertinoActionSheetAction(
+                              onPressed: signOut, child: Text('SignOut')),
+                        ],
+                        cancelButton: CupertinoActionSheetAction(
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => About()));
+                              Navigator.pop(context);
                             },
-                            child: Text('Tentang Kami')),
-                        CupertinoActionSheetAction(
-                            onPressed: signOut, child: Text('SignOut')),
-                      ],
-                      cancelButton: CupertinoActionSheetAction(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('Cancel'))));
-            },
-            child: BottomAppBar(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => PostAdd()));
-                      }),
-                ],
-              ),
-            ),
-          ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(color: Colors.red),
+                            ))));
+              },
+              child: CircleAvatar(
+                backgroundColor: Colors.green,
+                maxRadius: 30.0,
+                child: IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => PostAdd()));
+                    }),
+              )),
         );
     }
   }
@@ -146,11 +145,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void signOut() async {
-    prefs.clear();
     FirebaseAuth.instance.signOut();
     googleSignIn.signOut();
     _authStatus = AuthStatus.notSignedIn;
-    Navigator.pushReplacement(
+    Navigator.pop(
         context, MaterialPageRoute(builder: (BuildContext context) => Login()));
   }
 

@@ -4,18 +4,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class Detail extends StatefulWidget {
-  Detail(this.post);
-
   final Post post;
+
+  Detail(this.post);
 
   @override
   _DetailState createState() => _DetailState();
 }
 
 class _DetailState extends State<Detail> {
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,15 +63,14 @@ class _DetailState extends State<Detail> {
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    "Umur : " + widget.post.umur + " tahun",
+                    "Usia : " + widget.post.umur + " tahun",
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
                     color: Colors.green,
                   ),
                   Text(
-                    "Tanggal Meninggal : " +
-                        widget.post.tanggalMeninggal.toString(),
+                    "Tanggal Meninggal : " + widget.post.tanggalMeninggal,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
@@ -85,8 +81,7 @@ class _DetailState extends State<Detail> {
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    "Tanggal disemayamkan : " +
-                        widget.post.tanggalSemayam.toString(),
+                    "Tanggal disemayamkan : " + widget.post.tanggalSemayam,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
@@ -97,26 +92,32 @@ class _DetailState extends State<Detail> {
                         ' di ' +
                         widget.post.tempatDimakamkan +
                         ' pada ' +
-                        widget.post.tanggalSemayam.toString() +
+                        widget.post.tanggalSemayam +
                         ' pukul ' +
-                        widget.post.waktuSemayam.toString(),
+                        widget.post.waktuSemayam,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
                     color: Colors.green,
                   ),
+                  SizedBox(
+                    height: 40.0,
+                  ),
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CommentPage(widget.post)));
+                      },
+                      child: Text('Lihat Ucapan Belasungkawa')),
                 ],
               ),
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.chat_bubble),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CommentPage(widget.post)));
-          }),
     );
   }
 }

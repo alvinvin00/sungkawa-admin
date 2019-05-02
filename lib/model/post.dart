@@ -1,9 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class Post {
   String _key;
   String _photo;
   String _nama,
+      _userId,
       _tempatDimakamkan,
       _umur,
       _keterangan,
@@ -18,19 +19,22 @@ class Post {
   Post(
       this._key,
       this._photo,
-      this._alamat,
-      this._prosesi,
       this._nama,
+      this._userId,
       this._tempatDimakamkan,
       this._umur,
       this._keterangan,
       this._tanggalSemayam,
       this._lokasi,
+      this._alamat,
       this._tanggalMeninggal,
+      this._prosesi,
       this._waktuSemayam,
       this._timestamp);
 
   String get key => _key;
+
+  String get userId => _userId;
 
   String get prosesi => _prosesi;
 
@@ -56,19 +60,20 @@ class Post {
 
   int get timestamp => _timestamp;
 
-  Post.fromSnapshot(DocumentSnapshot snapshot) {
-    _key = snapshot.documentID;
-    _nama = snapshot.data["nama"];
-    _umur = snapshot.data["umur"];
-    _photo = snapshot.data['photo'];
-    _alamat = snapshot.data['alamat'];
-    _tanggalMeninggal = snapshot.data["tanggalMeninggal"];
-    _prosesi = snapshot.data["prosesi"];
-    _lokasi = snapshot.data["lokasi"];
-    _tempatDimakamkan = snapshot.data["tempatDimakamkan"];
-    _tanggalSemayam = snapshot.data["tanggalSemayam"];
-    _waktuSemayam = snapshot.data["waktuSemayam"];
-    _keterangan = snapshot.data["keterangan"];
-    _timestamp = snapshot.data['timestamp'];
+  Post.fromSnapshot(DataSnapshot snapshot) {
+    _key = snapshot.key;
+    _userId = snapshot.value['userId'];
+    _nama = snapshot.value["nama"];
+    _umur = snapshot.value["umur"];
+    _photo = snapshot.value['photo'];
+    _alamat = snapshot.value['alamat'];
+    _tanggalMeninggal = snapshot.value["tanggalMeninggal"];
+    _prosesi = snapshot.value["prosesi"];
+    _lokasi = snapshot.value["lokasi"];
+    _tempatDimakamkan = snapshot.value["tempatDimakamkan"];
+    _tanggalSemayam = snapshot.value["tanggalSemayam"];
+    _waktuSemayam = snapshot.value["waktuSemayam"];
+    _keterangan = snapshot.value["keterangan"];
+    _timestamp = snapshot.value['timestamp'];
   }
 }
