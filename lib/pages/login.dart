@@ -38,14 +38,14 @@ class _LoginState extends State<Login> {
         await firebaseAuth.signInWithCredential(credential);
     if (firebaseUser != null) {
       final QuerySnapshot result = await Firestore.instance
-          .collection('admin')
+          .collection('admins')
           .where('id', isEqualTo: firebaseUser.uid)
           .getDocuments();
       final List<DocumentSnapshot> documents = result.documents;
 
       if (documents.length == 0) {
         Firestore.instance
-            .collection('admin')
+            .collection('admins')
             .document(firebaseUser.uid)
             .setData({
           'nama': firebaseUser.displayName,
@@ -54,18 +54,20 @@ class _LoginState extends State<Login> {
         });
         currentUser = firebaseUser;
 
-        await prefs.setString('userId', currentUser.uid);
-        await prefs.setString('nama', currentUser.displayName);
-        await prefs.setString('email', currentUser.email);
+        prefs.setString('userId', currentUser.uid);
+        prefs.setString('nama', currentUser.displayName);
+        prefs.setString('email', currentUser.email);
       } else {
-        await prefs.setString('userId', currentUser.uid);
-        await prefs.setString('nama', currentUser.displayName);
-        await prefs.setString('email', currentUser.email);
+        prefs.setString('userId', currentUser.uid);
+        prefs.setString('nama', currentUser.displayName);
+        prefs.setString('email', currentUser.email);
       }
-      SnackBar(
-        content: Text('Login berhasil'),
-        duration: Duration(seconds: 2),
-      );
+      print({
+        prefs.getString('userId'),
+        prefs.getString('nama'),
+        prefs.getString('email'),
+      });
+
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => DashboardScreen()));
     } else {

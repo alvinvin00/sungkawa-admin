@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Sungkawa/model/post.dart';
 import 'package:Sungkawa/utilities/crud.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -32,6 +33,7 @@ class _UpdatePostState extends State<UpdatePost> {
 
   @override
   void initState() {
+    super.initState();
     nama = widget.post.nama;
     umur = widget.post.umur;
     alamat = widget.post.alamat;
@@ -44,17 +46,17 @@ class _UpdatePostState extends State<UpdatePost> {
     waktuSemayam = timeFormat.parse(widget.post.waktuSemayam);
   }
 
-  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final _formKey = new GlobalKey<FormState>();
   String userId;
   DateTime date = DateTime.now();
   int timestamp;
-
+  bool isUploading = false;
   final dateFormat = DateFormat('dd/MM/yyyy');
   final format = DateFormat("EEEE, MMMM d, yyyy 'at' h:mma");
   final timeFormat = DateFormat('HH:mm');
-
-  File image;
-  var imageFile, _processType;
+  double _progress;
+  File imageFile;
+  var image, _processType;
   bool isLoading = false;
 
   CRUD crud = new CRUD();
@@ -87,10 +89,10 @@ class _UpdatePostState extends State<UpdatePost> {
 
   ListView buildFormField() {
     return ListView(
-      key: _formKey,
       padding: EdgeInsets.only(top: 8.0),
       children: <Widget>[
-        Container(
+        Form(
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -182,6 +184,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 height: 8.0,
               ),
               TextFormField(
+                initialValue: lokasi,
                 decoration: InputDecoration(
                   labelText: 'Tempat disemayamkan',
                   alignLabelWithHint: true,
@@ -195,6 +198,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 textCapitalization: TextCapitalization.words,
               ),
               TextFormField(
+                initialValue: tempatDimakamkan,
                 decoration: InputDecoration(
                   labelText: 'Tempat Pemakaman/Kremasi',
                   alignLabelWithHint: true,
@@ -204,10 +208,11 @@ class _UpdatePostState extends State<UpdatePost> {
                 ),
                 maxLength: 50,
                 maxLines: 1,
-                onSaved: (value) => this.lokasi = value,
+                onSaved: (value) => this.tempatDimakamkan = value,
                 textCapitalization: TextCapitalization.words,
               ),
               DateTimePickerFormField(
+                initialValue: tanggalSemayam,
                 inputType: InputType.date,
                 editable: false,
                 format: dateFormat,
@@ -223,6 +228,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 height: 8.0,
               ),
               DateTimePickerFormField(
+                initialValue: waktuSemayam,
                 inputType: InputType.time,
                 editable: false,
                 format: timeFormat,
@@ -238,6 +244,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 height: 10.0,
               ),
               TextFormField(
+                initialValue: keterangan,
                 decoration: InputDecoration(
                   labelText: 'Keterangan',
                   hintText: 'Tulis keterangan...',
@@ -267,20 +274,29 @@ class _UpdatePostState extends State<UpdatePost> {
                     ),
                     onPressed: getImageGallery,
                   ),
-                  Container(
-                      height: 20,
-                      width: 20,
-                      child: isLoading == true
-                          ? CircularProgressIndicator()
-                          : Text('')),
+                  buildProgressBar(),
                 ],
               ),
-              imageFile != null ? buildImage() : Text(''),
+              imageFile != null
+                  ? buildImage()
+                  : CachedNetworkImage(imageUrl: widget.post.photo),
             ],
           ),
         )
       ],
     );
+  }
+
+  Widget buildProgressBar() {
+    if (isUploading == true) {
+      return Expanded(
+          child: LinearProgressIndicator(
+        value: _progress,
+      ));
+    } else if (isLoading == true) {
+      CircularProgressIndicator();
+    }
+    return Text('');
   }
 
   Widget buildImage() {
@@ -297,7 +313,7 @@ class _UpdatePostState extends State<UpdatePost> {
   void getImageGallery() async {
     try {
       imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-      print('imageFile : $imageFile');
+      print('imageFile : $image');
       setState(() {
         image = imageFile;
       });
@@ -309,7 +325,7 @@ class _UpdatePostState extends State<UpdatePost> {
   void getImageCamera() async {
     try {
       imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
-      print('imageFile : $imageFile');
+      print('imageFile : $image');
       setState(() {
         image = imageFile;
       });
@@ -319,11 +335,21 @@ class _UpdatePostState extends State<UpdatePost> {
   }
 
   Future<String> uploadImage(var imageFile) async {
+    setState(() {
+      isUploading = true;
+    });
+
     timestamp = DateTime.now().millisecondsSinceEpoch;
     String fileName = timestamp.toString() + 'jpg';
     StorageReference storageRef =
         FirebaseStorage.instance.ref().child('image').child(fileName);
     StorageUploadTask task = storageRef.putFile(image);
+    task.events.listen((event) {
+      setState(() {
+        _progress = event.snapshot.bytesTransferred.toDouble() /
+            event.snapshot.totalByteCount.toDouble();
+      });
+    });
     var downloadUrl = await (await task.onComplete).ref.getDownloadURL();
     String _url = downloadUrl.toString();
     return _url;
@@ -336,39 +362,43 @@ class _UpdatePostState extends State<UpdatePost> {
         userId = user.uid;
       });
     });
-    if (image != null) {
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      if (isUploading == true) {
+        uploadImage(imageFile).then((_url) {
+          pushData(_url);
+        });
+      } else
+        pushData(widget.post.photo);
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(e)));
+      print(e);
       setState(() {
-        isLoading = true;
+        isLoading = false;
       });
-      uploadImage(image).then((_url) {
-        try {
-          crud.addPost({
-            'nama': this.nama,
-            'usia': this.umur,
-            'photo': _url,
-            'timestamp': this.timestamp,
-            'userId': this.userId,
-            'tanggalMeninggal': this.tanggalMeninggal,
-            'alamat': this.alamat,
-            'prosesi': this._processType.toString(),
-            'tempatDimakamkan': this.tempatDimakamkan,
-            'tanggalSemayam': this.tanggalSemayam,
-            'lokasi': this.lokasi,
-            'waktuSemayam': this.waktuSemayam,
-            'keterangan': this.keterangan
-          }).then((result) => Navigator.pop(context));
-        } catch (e) {
-          Scaffold.of(context).showSnackBar(SnackBar(content: Text(e)));
-          print(e);
-          setState(() {
-            isLoading = false;
-          });
-        }
-      });
-    } else {
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('Gambar harus ada')));
     }
+  }
+
+  void pushData(var photo) {
+    crud.updatePost(widget.post.key, {
+      'nama': this.nama,
+      'umur': this.umur,
+      'photo': photo,
+      'userId': this.userId,
+      'tanggalMeninggal': dateFormat.format(this.tanggalMeninggal),
+      'alamat': this.alamat,
+      'prosesi': this._processType.toString(),
+      'lokasi': this.lokasi,
+      'tanggalSemayam': dateFormat.format(this.tanggalSemayam),
+      'tempatDimakamkan': this.tempatDimakamkan,
+      'waktuSemayam': timeFormat.format(this.waktuSemayam),
+      'keterangan': this.keterangan,
+      'timestamp': widget.post.timestamp
+    }).then((result) => Navigator.pop(context));
   }
 
   void handleProcessType(value) {

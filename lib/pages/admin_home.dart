@@ -1,5 +1,6 @@
 import 'package:Sungkawa/model/post.dart';
 import 'package:Sungkawa/pages/detail.dart';
+import 'package:Sungkawa/pages/post_update.dart';
 import 'package:Sungkawa/utilities/crud.dart';
 import 'package:Sungkawa/utilities/utilities.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
 
-    crud.getPost().then((results) {
+    crud.getPost().getDocuments().then((results) {
       print(results);
       setState(() {
         _stream = results;
@@ -37,7 +38,7 @@ class _HomePageState extends State<HomePage> {
     return new Container(
         child: _stream != null
             ? StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance.collection('posts').snapshots(),
+                stream: crud.getPost().snapshots(),
                 builder: (context, snapshot) {
                   return snapshot.data != null
                       ? ListView.builder(
@@ -65,9 +66,23 @@ class _HomePageState extends State<HomePage> {
                                             actions: <Widget>[
                                               CupertinoActionSheetAction(
                                                 child: Text('Ubah'),
+                                                onPressed: () {
+                                                  print('Buka update');
+                                                  Navigator.pop(context);
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              UpdatePost(
+                                                                  post)));
+                                                },
                                               ),
                                               CupertinoActionSheetAction(
                                                 child: Text('Hapus'),
+                                                onPressed: () {
+                                                  crud.deletePost(post.key);
+                                                  Navigator.pop(context);
+                                                },
                                               )
                                             ],
                                             cancelButton:

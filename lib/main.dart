@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipedetector/swipedetector.dart';
 
 void main() {
@@ -22,7 +23,7 @@ void main() {
 enum Pilihan { about, signOut }
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
-
+SharedPreferences prefs;
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -145,10 +146,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void signOut() async {
+    prefs.clear();
     FirebaseAuth.instance.signOut();
     googleSignIn.signOut();
     _authStatus = AuthStatus.notSignedIn;
-    Navigator.pop(
+    Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (BuildContext context) => Login()));
   }
 

@@ -1,18 +1,19 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Comment {
   String _key;
   String _fullName;
   String _comment;
-  String _personId;
+  String _postId;
+
   int _timestamp;
 
-  Comment(this._key, this._fullName, this._comment, this._personId,
-      this._timestamp);
+  Comment(
+      this._key, this._fullName, this._comment, this._postId, this._timestamp);
 
   int get timestamp => _timestamp;
 
-  String get personId => _personId;
+  String get postId => _postId;
 
   String get comment => _comment;
 
@@ -20,10 +21,11 @@ class Comment {
 
   String get key => _key;
 
-  Comment.fromSnapshot(DataSnapshot snapshot){
-    _key=snapshot.key;
-    _fullName=snapshot.value['fullName'];
-    _comment=snapshot.value['comment'];
-    _timestamp=snapshot.value['timestamp'];
+  Comment.fromSnapshot(DocumentSnapshot snapshot) {
+    _key = snapshot.documentID;
+    _fullName = snapshot.data['fullName'];
+    _comment = snapshot.data['comment'];
+    _timestamp = snapshot.data['timestamp'];
+    _postId = snapshot.data['postId'];
   }
 }

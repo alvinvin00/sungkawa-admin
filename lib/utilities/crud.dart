@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CRUD {
   CollectionReference postRef = Firestore.instance.collection('posts');
+  CollectionReference commentRef = Firestore.instance.collection('comments');
 
   Future<void> addPost(postData) async {
     postRef.add(postData).catchError((e) {
@@ -11,8 +12,18 @@ class CRUD {
     });
   }
 
-  getPost() async {
-    return await postRef.orderBy("timestamp", descending: true).getDocuments();
+  Future<void> addComment(commentData) async {
+    commentRef.add(commentData).catchError((e) {
+      print(e);
+    });
+  }
+
+  getPost() {
+    return postRef.orderBy("timestamp", descending: true);
+  }
+
+  getComment(postId) {
+    return commentRef.orderBy("timestamp", descending: true).where('postId',isEqualTo: postId);
   }
 
   updatePost(postId, postData) {

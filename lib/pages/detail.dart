@@ -1,4 +1,5 @@
 import 'package:Sungkawa/model/post.dart';
+import 'package:Sungkawa/pages/comment_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,9 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +111,12 @@ class _DetailState extends State<Detail> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.chat_bubble),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CommentPage(widget.post)));
+          }),
     );
   }
 }

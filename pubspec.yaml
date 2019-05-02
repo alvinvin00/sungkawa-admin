@@ -35,7 +35,6 @@ dependencies:
 #  search_widget: any
   swipedetector: ^1.2.0
   cloud_firestore: ^0.10.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
