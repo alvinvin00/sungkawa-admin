@@ -59,23 +59,44 @@ class _LoginState extends State<Login> {
   }
 
   Future handleSignIn() async {
+    GoogleSignInAccount googleAccount = await googleSignIn.signIn();
+    GoogleSignInAuthentication googleAuth = await googleAccount.authentication;
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
     prefs = await SharedPreferences.getInstance();
-    googleSignIn.signIn().whenComplete(() {
-      GoogleSignInAccount user = googleSignIn.currentUser;
-      var adminRef = FirebaseDatabase.instance
-          .reference()
-          .child('admins')
-          .orderByChild(user.id)
-          .once();
-      print('Admin Ref : ${adminRef.toString()}');
-      if (adminRef == null) {
-        crud.addAdmin(user.id, {'nama': user.displayName, 'email': user.email});
-      }
-      prefs.setString('userId', user.id);
-      prefs.setString('nama', user.displayName);
-      prefs.setString('email', user.email);
+
+    prefs.setString('userId', googleAccount.id);
+    prefs.setString('nama', googleAccount.displayName);
+    prefs.setString('email', googleAccount.email);
+
+    firebaseAuth.signInWithCredential(credential).whenComplete(() {
+      addToDatabase(googleAccount);
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => DashboardScreen()));
     });
+  }
+
+  Future addToDatabase(GoogleSignInAccount googleAccount) async {
+    print('Adding to database');
+    var adminRef = FirebaseDatabase.instance
+        .reference()
+        .child('admins')
+        .child(googleAccount.id);
+    adminRef.once().then((snapshot) {
+      if (snapshot.value == null) {
+        print('Added to database');
+        crud.addAdmin(googleAccount.id,
+            {'nama': googleAccount.displayName, 'email': googleAccount.email});
+      }
+    });
+
+//    if (googleAccount.id == key) {
+//      print('Added to database');
+//      crud.addAdmin(googleAccount.id,
+//          {'nama': googleAccount.displayName, 'email': googleAccount.email});
+//    }
   }
 }

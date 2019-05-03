@@ -48,9 +48,10 @@ class DashboardScreen extends StatefulWidget {
 enum AuthStatus { signedIn, notSignedIn }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  AuthStatus _authStatus = AuthStatus.notSignedIn;
+  AuthStatus _authStatus;
   var connectionStatus;
   SharedPreferences prefs;
+  GoogleSignIn user;
 
   @override
   void initState() {
@@ -131,6 +132,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           MaterialPageRoute(builder: (context) => PostAdd()));
                     }),
               )),
+        );
+
+      default:
+        return Center(
+          child: CircularProgressIndicator(),
         );
     }
   }

@@ -185,24 +185,22 @@ class _HomePageState extends State<HomePage> {
 
   Widget buildStatusText(data) {
     final dateFormat = DateFormat('dd/MM/yyyy');
-    final timeFormat = DateFormat('hh:mm a');
 
     DateTime tanggalMeninggal = dateFormat.parse(data.tanggalMeninggal);
-    DateTime tanggalSemayam = dateFormat.parse(data.tanggalSemayam);
-    DateTime waktuSemayam = timeFormat.parse(data.waktuSemayam);
 
     var now = DateTime.now();
 
     print('tanggal = $now');
-    if (now.isAfter(tanggalSemayam))
-      return Text(
-        ' Telah Disemayamkan',
-        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-      );
+
     if (now.isAfter(tanggalMeninggal))
       return Text(
         data.prosesi,
         style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+      );
+    else
+      return Text(
+        ' Telah Disemayamkan',
+        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
       );
   }
 }
