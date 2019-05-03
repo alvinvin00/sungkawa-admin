@@ -1,13 +1,14 @@
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
+
+import 'package:Sungkawa/main.dart';
+import 'package:Sungkawa/utilities/crud.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:Sungkawa/main.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 class PostAdd extends StatefulWidget {
   @override
@@ -42,10 +43,10 @@ class _PostAddState extends State<PostAdd> {
   BuildContext _snackBarContext;
 
   File image;
-  var imagefile, _prosesi;
+  var imageFile, _prosesi;
   bool isLoading = false;
   String kubur;
-
+  CRUD crud = new CRUD();
   var radiovalue;
 
   @override
@@ -200,7 +201,6 @@ class _PostAddState extends State<PostAdd> {
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
-                    onChanged: (dt) => setState(() => date = dt),
                   ),
                   SizedBox(
                     height: 8.0,
@@ -216,7 +216,6 @@ class _PostAddState extends State<PostAdd> {
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
-                    onChanged: (dt) => setState(() => date = dt),
                   ),
                   SizedBox(
                     height: 10.0,
@@ -251,17 +250,10 @@ class _PostAddState extends State<PostAdd> {
                         ),
                         onPressed: getImageGallery,
                       ),
-                      Container(
-                          height: 20,
-                          width: 20,
-                          child: isLoading == true
-                              ? LinearProgressIndicator(
-                            value: _progress,
-                          )
-                              : Text('')),
+                      buildProgressBar(),
                     ],
                   ),
-                  imagefile != null ? buildImage() : Text(''),
+                  imageFile != null ? buildImage() : Text(''),
                 ],
               ),
             ),
@@ -271,10 +263,20 @@ class _PostAddState extends State<PostAdd> {
     );
   }
 
+  Widget buildProgressBar() {
+    return Expanded(
+      child: isUploading == true
+          ? LinearProgressIndicator(
+              value: _progress,
+            )
+          : SizedBox(),
+    );
+  }
+
   Widget buildImage() {
     return Container(
       child: Image.file(
-        imagefile,
+        imageFile,
         width: MediaQuery.of(context).size.width,
         height: 240,
         fit: BoxFit.fitWidth,
@@ -284,10 +286,10 @@ class _PostAddState extends State<PostAdd> {
 
   void getImageGallery() async {
     try {
-      imagefile = await ImagePicker.pickImage(source: ImageSource.gallery);
-      print('imageFile : $imagefile');
+      imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+      print('imageFile : $imageFile');
       setState(() {
-        image = imagefile;
+        image = imageFile;
       });
     } catch (e) {
       print('Error $e');
@@ -296,10 +298,10 @@ class _PostAddState extends State<PostAdd> {
 
   void getImageCamera() async {
     try {
-      imagefile = await ImagePicker.pickImage(source: ImageSource.camera);
-      print('imageFile : $imagefile');
+      imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+      print('imageFile : $imageFile');
       setState(() {
-        image = imagefile;
+        image = imageFile;
       });
     } catch (e) {
       print('Error $e');
@@ -310,7 +312,7 @@ class _PostAddState extends State<PostAdd> {
     timestamp = DateTime.now().millisecondsSinceEpoch;
     String fileName = timestamp.toString() + 'jpg';
     StorageReference storageRef =
-    FirebaseStorage.instance.ref().child('image').child(fileName);
+        FirebaseStorage.instance.ref().child('image').child(fileName);
     StorageUploadTask task = storageRef.putFile(image);
 
     task.events.listen((event) {
@@ -338,11 +340,9 @@ class _PostAddState extends State<PostAdd> {
         isLoading = true;
       });
       uploadImage(image).then((_url) {
-        var postRef = FirebaseDatabase.instance.reference().child('posts');
-
         try {
           print('Posting ....');
-          postRef.push().set({
+          crud.addPost({
             'nama': namaController.text,
             'usia': umurController.text,
             'photo': _url,
@@ -394,12 +394,10 @@ class _PostAddState extends State<PostAdd> {
     _prosesi = 'Dimakamkan';
   }
 
-  @override
   void showErrorMessage() {
     Scaffold.of(_snackBarContext).showSnackBar(SnackBar(
       content: Text("Photo wajib ada"),
-      duration: Duration(seconds: 5),
-    )
-    );
+      duration: Duration(seconds: 2),
+    ));
   }
 }

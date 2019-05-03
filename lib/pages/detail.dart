@@ -63,7 +63,7 @@ class _DetailState extends State<Detail> {
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    "Usia : " + widget.post.umur + " tahun",
+                    "Usia : " + widget.post.usia + " tahun",
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Divider(
@@ -77,7 +77,7 @@ class _DetailState extends State<Detail> {
                     color: Colors.green,
                   ),
                   Text(
-                    'Disemayamkan di ' + widget.post.lokasi,
+                    'Disemayamkan di ' + widget.post.lokasiSemayam,
                     style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
@@ -90,7 +90,7 @@ class _DetailState extends State<Detail> {
                   Text(
                     widget.post.prosesi +
                         ' di ' +
-                        widget.post.tempatDimakamkan +
+                        widget.post.tempatMakam +
                         ' pada ' +
                         widget.post.tanggalSemayam +
                         ' pukul ' +
@@ -103,20 +103,20 @@ class _DetailState extends State<Detail> {
                   SizedBox(
                     height: 40.0,
                   ),
-                  FlatButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    CommentPage(widget.post)));
-                      },
-                      child: Text('Lihat Ucapan Belasungkawa')),
                 ],
               ),
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CommentPage(widget.post)));
+        },
+        child: Icon(Icons.comment),
       ),
     );
   }

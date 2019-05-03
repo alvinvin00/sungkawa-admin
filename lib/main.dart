@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipedetector/swipedetector.dart';
 
 void main() {
@@ -49,6 +50,7 @@ enum AuthStatus { signedIn, notSignedIn }
 class _DashboardScreenState extends State<DashboardScreen> {
   AuthStatus _authStatus = AuthStatus.notSignedIn;
   var connectionStatus;
+  SharedPreferences prefs;
 
   @override
   void initState() {
@@ -148,7 +150,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     FirebaseAuth.instance.signOut();
     googleSignIn.signOut();
     _authStatus = AuthStatus.notSignedIn;
-    Navigator.pop(
+    Navigator.pop(context);
+    Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (BuildContext context) => Login()));
   }
 

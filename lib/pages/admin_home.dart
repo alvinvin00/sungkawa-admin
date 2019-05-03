@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:Sungkawa/model/post.dart';
 import 'package:Sungkawa/pages/detail.dart';
 import 'package:Sungkawa/pages/post_update.dart';
+import 'package:Sungkawa/utilities/crud.dart';
 import 'package:Sungkawa/utilities/utilities.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -15,222 +16,180 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-final postref = FirebaseDatabase.instance.reference().child('posts');
+final _postRef = FirebaseDatabase.instance
+    .reference()
+    .child('posts')
+    .orderByChild('timestamp');
 Utilities util = new Utilities();
+CRUD crud = new CRUD();
 
 class _HomePageState extends State<HomePage> {
-  var title;
-  var nama, umur, lokasi, semayam, keluarga, post, user;
+  List<Post> _postList = new List();
 
-  List<Post> postList = new List();
-  final GlobalKey<RefreshIndicatorState> _refreshPageKey =
-      new GlobalKey<RefreshIndicatorState>();
+  StreamSubscription<Event> _onPostAddedSubscription;
+  StreamSubscription<Event> _onPostChangedSubscription;
 
-  StreamSubscription<Event> onPostAddedSubscription;
-  StreamSubscription<Event> onPostChangedSubscription;
-  StreamSubscription<Event> onPostDeletedSubscription;
-  int timestamp;
-
-  void _onPostAdded(Event event) {
-    print('Posting ditampilkan');
-    post = new Post.fromSnapshot(event.snapshot);
-    print(post);
+  _onPostAdded(Event event) {
     setState(() {
-      postList.add(post);
-      postList.sort((i, j) => j.timestamp.compareTo(i.timestamp));
+      _postList.add(Post.fromSnapshot(event.snapshot));
+      _postList.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     });
   }
 
-  void _onPostChanged(Event event) {
-    print('Posting diupdate');
-    post = new Post.fromSnapshot(event.snapshot);
+  _onPostChanged(Event event) {
+    var oldEntry = _postList.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+
     setState(() {
-      postList.add(post);
-      postList.sort((i, j) => j.timestamp.compareTo(i.timestamp));
+      _postList[_postList.indexOf(oldEntry)] =
+          Post.fromSnapshot(event.snapshot);
     });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    postList.clear();
-    onPostAddedSubscription = postref.onChildAdded.listen(_onPostAdded);
-    onPostChangedSubscription = postref.onChildChanged.listen(_onPostChanged);
+    _postList.clear();
+    _onPostAddedSubscription = _postRef.onChildAdded.listen(_onPostAdded);
+    _onPostChangedSubscription = _postRef.onChildChanged.listen(_onPostChanged);
+    _postList.sort((a, b) => b.timestamp.compareTo(a.timestamp));
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
-    onPostAddedSubscription.cancel();
-    onPostChangedSubscription.cancel();
-  }
-
-  @override
-  void didUpdateWidget(HomePage oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-    postList.clear();
-    onPostAddedSubscription = postref.onChildAdded.listen(_onPostAdded);
-    onPostChangedSubscription = postref.onChildChanged.listen(_onPostChanged);
-    postList.sort((i, j) => j.timestamp.compareTo(i.timestamp));
+    _postList.clear();
+    _onPostAddedSubscription.cancel();
+    _onPostChangedSubscription.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: postList == null
-          ? const Center(
-              child: const Text(
-                "Data Masih Kosong",
-                style: TextStyle(fontSize: 40),
-              ),
-            )
-          : ListView.builder(
-              itemBuilder: (buildContext, int index) {
-                Post post = postList[index];
+    return buildPage();
+  }
 
-                return Padding(
-                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Detail(post)));
-                    },
-                    onLongPress: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) => CupertinoAlertDialog(
-                                content:
-                                    Text('Pilihan opsi untuk postingan ini'),
-                                actions: <Widget>[
-                                  FlatButton(
-                                      onPressed: () {
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    UpdatePost(post)));
-                                      },
-                                      child: Text(
-                                        'Update',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue),
-                                      )),
-                                  FlatButton(
-                                      onPressed: () {
-                                        var postRef = FirebaseDatabase.instance
-                                            .reference()
-                                            .child('posts')
-                                            .child(postList[index].key);
-                                        postRef.remove().then((posting) {
-                                          Navigator.pop(context);
-                                        });
-                                      },
-                                      child: Text(
-                                        'Delete',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.red),
-                                      ))
-                                ],
-                              ));
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 16.0,
-                              right: 16.0,
-                              top: 10.0,
-                              bottom: 10.0,
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  postList[index].nama,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: SizedBox(),
-                                ),
-                                Text(
-                                  util.convertTimestamp(
-                                    postList[index].timestamp,
-                                  ),
-                                  style: TextStyle(
-                                      fontSize: 14.0, color: Colors.grey),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 16.0,
-                              right: 16.0,
-                              bottom: 10.0,
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  postList[index].umur + ' tahun',
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: SizedBox(),
-                                ),
-                                buildStatusText(index)
-                              ],
-                            ),
-                          ),
-                          Center(
-                            child: CachedNetworkImage(
-                              placeholder: (context, url) =>
-                                  CircularProgressIndicator(),
-                              errorWidget: (context, url, error) =>
-                                  Icon(Icons.error),
-                              imageUrl: postList[index].photo,
-                              height: 240.0,
-                              width: double.infinity,
-                              fit: BoxFit.fitWidth,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          )
+  Widget buildPage() {
+    if (_postList.length == 0)
+      return Center(child: CircularProgressIndicator());
+
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: _postList.length,
+      itemBuilder: (buildContext, int index) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Detail(_postList[index])));
+            },
+            onLongPress: () {
+              showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) => CupertinoActionSheet(
+                        title: Text("Apa yang ingin anda lakukan?"),
+                        actions: <Widget>[
+                          CupertinoActionSheetAction(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            UpdatePost(_postList[index])));
+                              },
+                              child: Text('Update'))
                         ],
-                      ),
+                      ));
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      right: 16.0,
+                      top: 10.0,
+                      bottom: 10.0,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          _postList[index].nama,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        Expanded(
+                          child: SizedBox(),
+                        ),
+                        Text(
+                          util.convertTimestamp(
+                            _postList[index].timestamp,
+                          ),
+                          style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                        )
+                      ],
                     ),
                   ),
-                );
-              },
-              itemCount: postList == null ? 0 : postList.length,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      right: 16.0,
+                      bottom: 10.0,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          _postList[index].usia + ' tahun',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Expanded(
+                          child: SizedBox(),
+                        ),
+                        buildStatusText(_postList[index])
+                      ],
+                    ),
+                  ),
+                  Center(
+                    child: CachedNetworkImage(
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      imageUrl: _postList[index].photo,
+                      height: 240.0,
+                      width: double.infinity,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  )
+                ],
+              ),
             ),
+          ),
+        );
+      },
     );
   }
 
-  Widget buildStatusText(int index) {
+  Widget buildStatusText(data) {
     final dateFormat = DateFormat('dd/MM/yyyy');
     final timeFormat = DateFormat('hh:mm a');
 
-    DateTime tanggalMeninggal =
-        dateFormat.parse(postList[index].tanggalMeninggal);
-    DateTime tanggalSemayam = dateFormat.parse(postList[index].tanggalSemayam);
-    DateTime waktuSemayam = timeFormat.parse(postList[index].waktuSemayam);
+    DateTime tanggalMeninggal = dateFormat.parse(data.tanggalMeninggal);
+    DateTime tanggalSemayam = dateFormat.parse(data.tanggalSemayam);
+    DateTime waktuSemayam = timeFormat.parse(data.waktuSemayam);
 
     var now = DateTime.now();
 
@@ -238,11 +197,11 @@ class _HomePageState extends State<HomePage> {
     if (now.isAfter(tanggalSemayam))
       return Text(
         ' Telah Disemayamkan',
-        style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
+        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
       );
     if (now.isAfter(tanggalMeninggal))
       return Text(
-        postList[index].prosesi,
+        data.prosesi,
         style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
       );
   }

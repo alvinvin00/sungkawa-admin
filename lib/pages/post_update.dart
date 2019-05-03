@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:Sungkawa/model/post.dart';
+import 'package:Sungkawa/utilities/crud.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UpdatePost extends StatefulWidget {
   final Post post;
@@ -24,12 +26,14 @@ class _UpdatePostState extends State<UpdatePost> {
   double _progress;
   bool isChanged = false;
   var postRef;
+  CRUD crud = new CRUD();
+  SharedPreferences prefs;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    readLocal();
     postRef = FirebaseDatabase.instance
         .reference()
         .child('posts')
@@ -39,12 +43,12 @@ class _UpdatePostState extends State<UpdatePost> {
     tanggalMeninggal = dateFormat.parse(widget.post.tanggalMeninggal);
     waktuSemayam = timeFormat.parse(widget.post.waktuSemayam);
     nama = widget.post.nama;
-    usia = widget.post.umur;
+    usia = widget.post.usia;
     alamat = widget.post.alamat;
 
     keterangan = widget.post.keterangan;
-    lokasiSemayam = widget.post.lokasi;
-    tempatMakam = widget.post.tempatDimakamkan;
+    lokasiSemayam = widget.post.lokasiSemayam;
+    tempatMakam = widget.post.tempatMakam;
   }
 
   DateTime tanggalSemayam, waktuSemayam, tanggalMeninggal;
@@ -407,7 +411,7 @@ class _UpdatePostState extends State<UpdatePost> {
   void pushData(_url) {
     try {
       print('Updating ....');
-      postRef.update({
+      crud.updatePost(widget.post.key, {
         'nama': nama,
         'usia': usia,
         'photo': _url,
@@ -421,12 +425,12 @@ class _UpdatePostState extends State<UpdatePost> {
         'lokasiSemayam': lokasiSemayam,
         'waktuSemayam': timeFormat.format(waktuSemayam),
         'keterangan': keterangan
-      }).whenComplete(() {
-        print('Updating selesai.......');
-        Navigator.pop(context);
       });
     } catch (e) {
       print('error : $e');
+    } finally {
+      print('Updating selesai.......');
+      Navigator.pop(context);
     }
   }
 
@@ -441,5 +445,10 @@ class _UpdatePostState extends State<UpdatePost> {
           width: 20, height: 20, child: CircularProgressIndicator());
     else
       return SizedBox();
+  }
+
+  void readLocal() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userId =  prefs.getString('userId');
   }
 }
