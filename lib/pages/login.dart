@@ -92,11 +92,5 @@ class _LoginState extends State<Login> {
             {'nama': googleAccount.displayName, 'email': googleAccount.email});
       }
     });
-
-//    if (googleAccount.id == key) {
-//      print('Added to database');
-//      crud.addAdmin(googleAccount.id,
-//          {'nama': googleAccount.displayName, 'email': googleAccount.email});
-//    }
   }
 }
