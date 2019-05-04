@@ -22,7 +22,10 @@ class _CommentPageState extends State<CommentPage> {
   CRUD crud = new CRUD();
   Utilities util = new Utilities();
   var _commentRef;
+
   final commentController = new TextEditingController();
+  final commentNode = new FocusNode();
+
   SharedPreferences prefs;
   List<Comment> _commentList = new List();
   StreamSubscription<Event> _onCommentAddedSubscription;
@@ -83,7 +86,11 @@ class _CommentPageState extends State<CommentPage> {
             child: ListTile(
               title: TextField(
                 controller: commentController,
+                autofocus: true,
+                textInputAction: TextInputAction.send,
                 onChanged: (value) => comment = value,
+                onEditingComplete: sendComment,
+                focusNode: commentNode,
                 decoration:
                     InputDecoration(hintText: 'Tuliskan Komentarmu disini'),
               ),
@@ -101,14 +108,37 @@ class _CommentPageState extends State<CommentPage> {
       return ListView.builder(
           itemCount: _commentList.length,
           itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(
-                _commentList[index].fullName,
-                style: TextStyle(fontWeight: FontWeight.bold),
+            return Dismissible(
+              background: Container(
+                color: Colors.red,
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Icon(Icons.delete_forever)),
               ),
-              trailing:
-                  Text(util.convertTimestamp(_commentList[index].timestamp)),
-              subtitle: Text(_commentList[index].comment),
+              direction: DismissDirection.startToEnd,
+              onDismissed: (direction) {
+                crud.deleteComment(widget.post.key, _commentList[index].key);
+                setState(() {
+                  _commentList.removeAt(index);
+                });
+
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Comment Removed'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              child: ListTile(
+                title: Text(
+                  _commentList[index].fullName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                trailing:
+                    Text(util.convertTimestamp(_commentList[index].timestamp)),
+                subtitle: Text(_commentList[index].comment),
+              ),
+              key: Key(_commentList[index].key),
             );
           });
     } else {
@@ -116,15 +146,16 @@ class _CommentPageState extends State<CommentPage> {
     }
   }
 
-  void sendComment() async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-    print('koment' + comment);
-    prefs = await SharedPreferences.getInstance();
+  void sendComment() {
+    print('Comment : ' + comment);
     crud.addComment(widget.post.key, {
       'fullName': fullName,
       'comment': comment,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
       'userId': userId,
+    }).whenComplete(() {
+      commentController.clear();
+      commentNode.unfocus();
     });
   }
 

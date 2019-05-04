@@ -96,42 +96,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           body: HomePage(),
           floatingActionButton: SwipeDetector(
-              onSwipeUp: () {
-                showCupertinoModalPopup(
-                    context: context,
-                    builder: (context) => CupertinoActionSheet(
-                        title: const Text('Pilihan menu'),
-                        actions: <Widget>[
-                          CupertinoActionSheetAction(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => About()));
-                              },
-                              child: Text('Tentang Kami')),
-                          CupertinoActionSheetAction(
-                              onPressed: signOut, child: Text('SignOut')),
-                        ],
-                        cancelButton: CupertinoActionSheetAction(
+            onSwipeUp: () {
+              showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) => CupertinoActionSheet(
+                      title: const Text('Pilihan menu'),
+                      actions: <Widget>[
+                        CupertinoActionSheetAction(
                             onPressed: () {
-                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => About()));
                             },
-                            child: Text(
-                              'Cancel',
-                              style: TextStyle(color: Colors.red),
-                            ))));
-              },
-              child: CircleAvatar(
+                            child: Text('Tentang Kami')),
+                        CupertinoActionSheetAction(
+                            onPressed: signOut, child: Text('SignOut')),
+                      ],
+                      cancelButton: CupertinoActionSheetAction(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(color: Colors.red),
+                          ))));
+            },
+            child: FloatingActionButton(
+                child: Icon(Icons.add),
                 backgroundColor: Colors.green,
-                maxRadius: 30.0,
-                child: IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => PostAdd()));
-                    }),
-              )),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => PostAdd()));
+                }),
+          ),
         );
 
       default:

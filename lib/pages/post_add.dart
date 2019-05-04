@@ -88,6 +88,7 @@ class _PostAddState extends State<PostAdd> {
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
+                    textInputAction: TextInputAction.next,
                     maxLength: 50,
                     maxLines: 1,
                     controller: namaController,
