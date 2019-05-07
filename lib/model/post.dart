@@ -44,7 +44,7 @@ class Post {
 
   get tempatMakam => _tempatMakam;
 
- String get usia => _usia;
+  String get usia => _usia;
 
   get keterangan => _keterangan;
 
@@ -81,4 +81,38 @@ class Post {
     _keterangan = snapshot.value["keterangan"];
     _timestamp = snapshot.value['timestamp'];
   }
+
+  Post.fromJson(Map<String, dynamic> json) {
+    _userId = json['userId'];
+    _nama = json["nama"];
+    _usia = json["usia"];
+    _photo = json['photo'];
+    _alamat = json['alamat'];
+    _tanggalMeninggal = json["tanggalMeninggal"];
+    _prosesi = json["prosesi"];
+    _lokasiSemayam = json["lokasiSemayam"];
+    _lokasiMakam = json["lokasiMakam"];
+    _tempatMakam = json["tempatMakam"];
+    _tanggalSemayam = json["tanggalSemayam"];
+    _waktuSemayam = json["waktuSemayam"];
+    _keterangan = json["keterangan"];
+    _timestamp = json['timestamp'];
+  }
+
+  Map<String, dynamic> toJson() => {
+        'userId': _userId,
+        'nama': _nama,
+        'usia': _usia,
+        'photo': _photo,
+        'alamat': _alamat,
+        'tanggalMeninggal': _tanggalMeninggal,
+        'prosesi': _prosesi,
+        'lokasiSemayam': _lokasiSemayam,
+        'lokasiMakam': _lokasiMakam,
+        'tempatMakam': _tempatMakam,
+        'tanggalSemayam': _tanggalSemayam,
+        'waktuSemayam': _waktuSemayam,
+        'keterangan': _keterangan,
+        'timestamp': _timestamp
+      };
 }

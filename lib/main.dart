@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:swipedetector/swipedetector.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -28,6 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Sungkawa',
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
           primarySwatch: Colors.green,
@@ -91,45 +91,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
               'Sungkawa',
               textAlign: TextAlign.center,
             ),
-            actions: <Widget>[],
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    showCupertinoModalPopup(
+                        context: context,
+                        builder: (context) => CupertinoActionSheet(
+                            title: const Text(
+                              'Pilihan menu',
+                            ),
+                            actions: <Widget>[
+                              CupertinoActionSheetAction(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => About()));
+                                  },
+                                  child: Text('Tentang Kami')),
+                              CupertinoActionSheetAction(
+                                  isDestructiveAction: true,
+                                  onPressed: signOut,
+                                  child: Text(
+                                    'Sign Out',
+                                  )),
+                            ],
+                            cancelButton: CupertinoActionSheetAction(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(color: Colors.red),
+                                ))));
+                  },
+                  child: Text(
+                    'Options',
+                    style: TextStyle(color: Colors.white),
+                  ))
+            ],
             backgroundColor: Colors.green[800],
           ),
           body: HomePage(),
-          floatingActionButton: SwipeDetector(
-            onSwipeUp: () {
-              showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) => CupertinoActionSheet(
-                      title: const Text('Pilihan menu'),
-                      actions: <Widget>[
-                        CupertinoActionSheetAction(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => About()));
-                            },
-                            child: Text('Tentang Kami')),
-                        CupertinoActionSheetAction(
-                            onPressed: signOut, child: Text('SignOut')),
-                      ],
-                      cancelButton: CupertinoActionSheetAction(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(color: Colors.red),
-                          ))));
-            },
-            child: FloatingActionButton(
-                child: Icon(Icons.add),
-                backgroundColor: Colors.green,
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => PostAdd()));
-                }),
-          ),
+          floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.add),
+              backgroundColor: Colors.green,
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PostAdd()));
+              }),
         );
 
       default:
@@ -139,16 +149,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  void selectedAction(Pilihan value) {
-    print('You choose : $value');
-    if (value == Pilihan.about) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (BuildContext context) => About()));
-    }
-    if (value == Pilihan.signOut) {
-      signOut();
-    }
-  }
+//  void selectedAction(Pilihan value) {
+//    print('You choose : $value');
+//    if (value == Pilihan.about) {
+//      Navigator.push(context,
+//          MaterialPageRoute(builder: (BuildContext context) => About()));
+//    }
+//    if (value == Pilihan.signOut) {
+//      signOut();
+//    }
+//  }
 
   void signOut() async {
     FirebaseAuth.instance.signOut();
@@ -159,21 +169,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         context, MaterialPageRoute(builder: (BuildContext context) => Login()));
   }
 
-  void checkConnectivity() async {
-    try {
-      var connectivityResult = await (Connectivity().checkConnectivity());
-      if (connectivityResult == ConnectivityResult.mobile) {
-        print('Connectivity Result: $connectivityResult');
-        connectionStatus = true;
-      } else if (connectivityResult == ConnectivityResult.wifi) {
-        print('Connectivity Result: $connectivityResult');
-        connectionStatus = true;
-      } else {
-        print('Connectivity Result: not connected');
-        connectionStatus = false;
-      }
-    } catch (e) {
-      print('Error: $e');
+  static Future<bool> checkConnectivity() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      print('Connectivity Result: $connectivityResult');
+      return true;
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      print('Connectivity Result: $connectivityResult');
+      return true;
+    } else {
+      print('Connectivity Result: not connected');
+      return false;
     }
   }
 }

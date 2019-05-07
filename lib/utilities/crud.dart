@@ -26,6 +26,17 @@ class CRUD {
     });
   }
 
+  bool checkPostEmpty() {
+    bool isEmpty;
+    postRef.once().then((snapshot) {
+      if (snapshot.value == null)
+        isEmpty = true;
+      else
+        isEmpty = false;
+    });
+    return isEmpty;
+  }
+
   updatePost(postId, postData) {
     postRef.child(postId).update(postData).catchError((e) {
       print(e);

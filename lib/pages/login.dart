@@ -81,11 +81,12 @@ class _LoginState extends State<Login> {
 
   Future addToDatabase(GoogleSignInAccount googleAccount) async {
     print('Adding to database');
-    var adminRef = FirebaseDatabase.instance
+    FirebaseDatabase.instance
         .reference()
         .child('admins')
-        .child(googleAccount.id);
-    adminRef.once().then((snapshot) {
+        .child(googleAccount.id)
+        .once()
+        .then((snapshot) {
       if (snapshot.value == null) {
         print('Added to database');
         crud.addAdmin(googleAccount.id,

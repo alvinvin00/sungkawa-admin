@@ -18,7 +18,7 @@ class CommentPage extends StatefulWidget {
 }
 
 class _CommentPageState extends State<CommentPage> {
-  String comment, fullName, userId;
+  String fullName, userId;
   CRUD crud = new CRUD();
   Utilities util = new Utilities();
   var _commentRef;
@@ -80,15 +80,17 @@ class _CommentPageState extends State<CommentPage> {
       ),
       body: Column(
         children: <Widget>[
-          Expanded(child: Container(child: buildCommentPage())),
+          Expanded(
+            child: Container(
+              child: buildCommentPage(),
+            ),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: ListTile(
               title: TextField(
                 controller: commentController,
-                autofocus: true,
                 textInputAction: TextInputAction.send,
-                onChanged: (value) => comment = value,
                 onEditingComplete: sendComment,
                 focusNode: commentNode,
                 decoration:
@@ -113,7 +115,10 @@ class _CommentPageState extends State<CommentPage> {
                 color: Colors.red,
                 child: Align(
                     alignment: Alignment.centerLeft,
-                    child: Icon(Icons.delete_forever)),
+                    child: Icon(
+                      Icons.delete_forever,
+                      color: Colors.white,
+                    )),
               ),
               direction: DismissDirection.startToEnd,
               onDismissed: (direction) {
@@ -141,21 +146,22 @@ class _CommentPageState extends State<CommentPage> {
               key: Key(_commentList[index].key),
             );
           });
-    } else {
-      return Center(child: CircularProgressIndicator());
     }
+    return Center(child: CircularProgressIndicator());
   }
 
   void sendComment() {
-    print('Comment : ' + comment);
-    crud.addComment(widget.post.key, {
-      'fullName': fullName,
-      'comment': comment,
-      'timestamp': DateTime.now().millisecondsSinceEpoch,
-      'userId': userId,
-    }).whenComplete(() {
-      commentController.clear();
-      commentNode.unfocus();
+    print('Comment : ' + commentController.text);
+    setState(() {
+      crud.addComment(widget.post.key, {
+        'fullName': fullName,
+        'comment': commentController.text,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'userId': userId,
+      }).whenComplete(() {
+        commentController.clear();
+        commentNode.unfocus();
+      });
     });
   }
 

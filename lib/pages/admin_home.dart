@@ -100,7 +100,17 @@ class _HomePageState extends State<HomePage> {
                                         builder: (context) =>
                                             UpdatePost(_postList[index])));
                               },
-                              child: Text('Update'))
+                              child: Text('Update')),
+                          CupertinoActionSheetAction(
+                            isDestructiveAction: true,
+                            child: Text('Delete'),
+                            onPressed: () {
+                              crud.deletePost(_postList[index].key);
+                              setState(() {
+                                _postList.removeAt(index);
+                              });
+                            },
+                          )
                         ],
                       ));
             },
