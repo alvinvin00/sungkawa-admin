@@ -449,6 +449,6 @@ class _UpdatePostState extends State<UpdatePost> {
 
   void readLocal() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId =  prefs.getString('userId');
+    userId = prefs.getString('userId');
   }
 }

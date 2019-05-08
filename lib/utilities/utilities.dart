@@ -8,13 +8,14 @@ class Utilities {
     var diff = now.difference(date);
     var timeText = '';
 
-    if (diff.inSeconds <=0 || diff.inSeconds >0 && diff.inMinutes ==0 ||
-        diff.inMinutes >0 && diff.inHours == 0 || diff.inHours > 0 && diff.inDays ==0){
+    if (diff.inSeconds <= 0 ||
+        diff.inSeconds > 0 && diff.inMinutes == 0 ||
+        diff.inMinutes > 0 && diff.inHours == 0 ||
+        diff.inHours > 0 && diff.inDays == 0) {
       timeText = format.format(date);
-    }else{
+    } else {
       timeText = diff.inDays.toString() + ' HARI YANG LALU';
     }
     return timeText;
   }
 }
-

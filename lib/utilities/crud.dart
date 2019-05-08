@@ -26,7 +26,7 @@ class CRUD {
     });
   }
 
-   checkPostEmpty() {
+  checkPostEmpty() {
     bool isEmpty;
     postRef.orderByKey().once().then((snapshot) {
       if (snapshot.value == null)
@@ -39,8 +39,7 @@ class CRUD {
     });
   }
 
-
- bool checkCommentEmpty(postId)  {
+  bool checkCommentEmpty(postId) {
     bool isEmpty;
     commentRef.child(postId).orderByKey().once().then((snapshot) {
       if (snapshot.value == null)
@@ -51,9 +50,7 @@ class CRUD {
       print(isEmpty);
       return isEmpty;
     });
-
-
- }
+  }
 
   updatePost(postId, postData) {
     postRef.child(postId).update(postData).catchError((e) {

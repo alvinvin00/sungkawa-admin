@@ -125,44 +125,45 @@ class _CommentPageState extends State<CommentPage> {
 
   Widget buildCommentPage() {
     return ListView.builder(
-        itemCount: _commentList.length,
-        itemBuilder: (context, index) {
-          return Dismissible(
-            background: Container(
-              color: Colors.red,
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Icon(
-                    Icons.delete_forever,
-                    color: Colors.white,
-                  )),
-            ),
-            direction: DismissDirection.startToEnd,
-            onDismissed: (direction) {
-              crud.deleteComment(widget.post.key, _commentList[index].key);
+      itemCount: _commentList.length,
+      itemBuilder: (context, index) {
+        return Dismissible(
+          background: Container(
+            color: Colors.red,
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Icon(
+                  Icons.delete_forever,
+                  color: Colors.white,
+                )),
+          ),
+          direction: DismissDirection.startToEnd,
+          onDismissed: (direction) {
+            crud.deleteComment(widget.post.key, _commentList[index].key);
 //              setState(() {
 //                _commentList.removeAt(index);
 //              });
 
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Comment Removed'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            child: ListTile(
-              title: Text(
-                _commentList[index].fullName,
-                style: TextStyle(fontWeight: FontWeight.bold),
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Comment Removed'),
+                duration: Duration(seconds: 2),
               ),
-              trailing:
-                  Text(util.convertTimestamp(_commentList[index].timestamp)),
-              subtitle: Text(_commentList[index].comment),
+            );
+          },
+          child: ListTile(
+            title: Text(
+              _commentList[index].fullName,
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            key: Key(_commentList[index].key),
-          );
-        },);
+            trailing:
+                Text(util.convertTimestamp(_commentList[index].timestamp)),
+            subtitle: Text(_commentList[index].comment),
+          ),
+          key: Key(_commentList[index].key),
+        );
+      },
+    );
   }
 
   void sendComment() {
