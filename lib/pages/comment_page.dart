@@ -22,7 +22,7 @@ class _CommentPageState extends State<CommentPage> {
   CRUD crud = new CRUD();
   Utilities util = new Utilities();
   var _commentRef;
-
+  bool isEmpty;
   final commentController = new TextEditingController();
   final commentNode = new FocusNode();
 
@@ -30,6 +30,7 @@ class _CommentPageState extends State<CommentPage> {
   List<Comment> _commentList = new List();
   StreamSubscription<Event> _onCommentAddedSubscription;
   StreamSubscription<Event> _onCommentChangedSubscription;
+  StreamSubscription<Event> _onCommentRemovedSubscription;
 
   _onCommentAdded(Event event) {
     setState(() {
@@ -48,6 +49,16 @@ class _CommentPageState extends State<CommentPage> {
     });
   }
 
+  _onCommentRemoved(Event event) {
+    var deletedEntry = _commentList.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+    print('on child removed called');
+    setState(() {
+      _commentList.remove(deletedEntry);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -58,10 +69,16 @@ class _CommentPageState extends State<CommentPage> {
         .orderByChild('timestamp');
     readLocal();
     _commentList.clear();
+
     _onCommentAddedSubscription =
         _commentRef.onChildAdded.listen(_onCommentAdded);
     _onCommentChangedSubscription =
         _commentRef.onChildChanged.listen(_onCommentChanged);
+    _onCommentRemovedSubscription =
+        _commentRef.onChildRemoved.listen(_onCommentRemoved);
+
+    isEmpty = crud.checkCommentEmpty(widget.post.key);
+    print(isEmpty);
   }
 
   @override
@@ -70,6 +87,7 @@ class _CommentPageState extends State<CommentPage> {
     _commentList.clear();
     _onCommentAddedSubscription.cancel();
     _onCommentChangedSubscription.cancel();
+    _onCommentRemovedSubscription.cancel();
   }
 
   @override
@@ -106,48 +124,45 @@ class _CommentPageState extends State<CommentPage> {
   }
 
   Widget buildCommentPage() {
-    if (_commentList.length != 0) {
-      return ListView.builder(
-          itemCount: _commentList.length,
-          itemBuilder: (context, index) {
-            return Dismissible(
-              background: Container(
-                color: Colors.red,
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Icon(
-                      Icons.delete_forever,
-                      color: Colors.white,
-                    )),
-              ),
-              direction: DismissDirection.startToEnd,
-              onDismissed: (direction) {
-                crud.deleteComment(widget.post.key, _commentList[index].key);
-                setState(() {
-                  _commentList.removeAt(index);
-                });
+    return ListView.builder(
+        itemCount: _commentList.length,
+        itemBuilder: (context, index) {
+          return Dismissible(
+            background: Container(
+              color: Colors.red,
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Icon(
+                    Icons.delete_forever,
+                    color: Colors.white,
+                  )),
+            ),
+            direction: DismissDirection.startToEnd,
+            onDismissed: (direction) {
+              crud.deleteComment(widget.post.key, _commentList[index].key);
+//              setState(() {
+//                _commentList.removeAt(index);
+//              });
 
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Comment Removed'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
-              child: ListTile(
-                title: Text(
-                  _commentList[index].fullName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Comment Removed'),
+                  duration: Duration(seconds: 2),
                 ),
-                trailing:
-                    Text(util.convertTimestamp(_commentList[index].timestamp)),
-                subtitle: Text(_commentList[index].comment),
+              );
+            },
+            child: ListTile(
+              title: Text(
+                _commentList[index].fullName,
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              key: Key(_commentList[index].key),
-            );
-          });
-    }
-    return Center(child: CircularProgressIndicator());
+              trailing:
+                  Text(util.convertTimestamp(_commentList[index].timestamp)),
+              subtitle: Text(_commentList[index].comment),
+            ),
+            key: Key(_commentList[index].key),
+          );
+        },);
   }
 
   void sendComment() {

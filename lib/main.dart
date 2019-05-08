@@ -19,8 +19,6 @@ void main() {
   });
 }
 
-enum Pilihan { about, signOut }
-
 final GoogleSignIn googleSignIn = GoogleSignIn();
 
 class MyApp extends StatelessWidget {

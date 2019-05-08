@@ -26,16 +26,34 @@ class CRUD {
     });
   }
 
-  bool checkPostEmpty() {
+   checkPostEmpty() {
     bool isEmpty;
-    postRef.once().then((snapshot) {
+    postRef.orderByKey().once().then((snapshot) {
       if (snapshot.value == null)
         isEmpty = true;
       else
         isEmpty = false;
+    }).whenComplete(() {
+      print(isEmpty);
+      return isEmpty;
     });
-    return isEmpty;
   }
+
+
+ bool checkCommentEmpty(postId)  {
+    bool isEmpty;
+    commentRef.child(postId).orderByKey().once().then((snapshot) {
+      if (snapshot.value == null)
+        isEmpty = true;
+      else
+        isEmpty = false;
+    }).whenComplete(() {
+      print(isEmpty);
+      return isEmpty;
+    });
+
+
+ }
 
   updatePost(postId, postData) {
     postRef.child(postId).update(postData).catchError((e) {
