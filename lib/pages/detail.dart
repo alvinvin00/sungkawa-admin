@@ -54,18 +54,40 @@ class _DetailState extends State<Detail> {
                   SizedBox(
                     height: 30,
                   ),
-                  Text(
-                    "Nama : " + widget.post.nama,
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    "Alamat : " + widget.post.alamat,
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    "Usia : " + widget.post.usia + " tahun",
-                    style: TextStyle(fontSize: 16.0),
-                  ),
+                  Table(defaultColumnWidth: IntrinsicColumnWidth(), children: [
+                    TableRow(
+                      children: [
+                        Text(
+                          "Nama   : ",
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        Text(
+                          widget.post.nama,
+                          style: TextStyle(fontSize: 16),
+                        )
+                      ],
+                    ),
+                    TableRow(children: [
+                      Text(
+                        "Alamat : ",
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                      Text(
+                        widget.post.alamat,
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                    ]),
+                    TableRow(children: [
+                      Text(
+                        "Usia      : ",
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                      Text(
+                        widget.post.usia + " tahun",
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                    ])
+                  ]),
                   Divider(
                     color: Colors.green,
                   ),
