@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:Sungkawa/model/comment.dart';
 import 'package:Sungkawa/model/post.dart';
 import 'package:Sungkawa/pages/comment_page.dart';
+import 'package:Sungkawa/utilities/utilities.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class Detail extends StatefulWidget {
@@ -13,6 +18,69 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+  List<Comment> _commentList = new List();
+  var _commentRef;
+
+  Utilities util = new Utilities();
+  StreamSubscription<Event> _onCommentAddedSubscription;
+  StreamSubscription<Event> _onCommentChangedSubscription;
+  StreamSubscription<Event> _onCommentRemovedSubscription;
+
+  _onCommentAdded(Event event) {
+    setState(() {
+      _commentList.add(Comment.fromSnapshot(event.snapshot));
+    });
+  }
+
+  _onCommentChanged(Event event) {
+    var oldEntry = _commentList.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+
+    setState(() {
+      _commentList[_commentList.indexOf(oldEntry)] =
+          Comment.fromSnapshot(event.snapshot);
+    });
+  }
+
+  _onCommentRemoved(Event event) {
+    var deletedEntry = _commentList.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+    print('on child removed called');
+    setState(() {
+      _commentList.remove(deletedEntry);
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _commentRef = FirebaseDatabase.instance
+        .reference()
+        .child('comments')
+        .child(widget.post.key)
+        .orderByChild('timestamp');
+    _commentList.clear();
+    _onCommentAddedSubscription =
+        _commentRef.onChildAdded.listen(_onCommentAdded);
+    _onCommentChangedSubscription =
+        _commentRef.onChildChanged.listen(_onCommentChanged);
+    _onCommentRemovedSubscription =
+        _commentRef.onChildRemoved.listen(_onCommentRemoved);
+    _onCommentRemovedSubscription =
+        _commentRef.onChildRemoved.listen(_onCommentRemoved);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _onCommentAddedSubscription.cancel();
+    _onCommentChangedSubscription.cancel();
+    _onCommentRemovedSubscription.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,45 +117,27 @@ class _DetailState extends State<Detail> {
                     'Telah Meninggal Dunia',
                     textAlign: TextAlign.center,
                     style:
-                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                    TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 30,
                   ),
-                  Table(defaultColumnWidth: IntrinsicColumnWidth(), children: [
-                    TableRow(
-                      children: [
-                        Text(
-                          "Nama   : ",
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                        Text(
-                          widget.post.nama,
-                          style: TextStyle(fontSize: 16),
-                        )
-                      ],
-                    ),
-                    TableRow(children: [
-                      Text(
-                        "Alamat : ",
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                      Text(
-                        widget.post.alamat,
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                    ]),
-                    TableRow(children: [
-                      Text(
-                        "Usia      : ",
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                      Text(
-                        widget.post.usia + " tahun",
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                    ])
-                  ]),
+                  Text(
+                    "Nama : " + widget.post.nama,
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  Text(
+                    "Alamat : " + widget.post.alamat,
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  Text(
+                    "Usia : " + widget.post.usia + " tahun",
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  Text(
+                    "Agama : " + widget.post.agama,
+                    style: TextStyle(fontSize: 16.0),
+                  ),
                   Divider(
                     color: Colors.green,
                   ),
@@ -122,24 +172,62 @@ class _DetailState extends State<Detail> {
                   Divider(
                     color: Colors.green,
                   ),
-                  SizedBox(
-                    height: 40.0,
+                  SizedBox(height: 10.0),
+                  Text(
+                    widget.post.keterangan,
                   ),
+                  Text(
+                    'Ucapan Belasungkawa (' +
+                        _commentList.length.toString() +
+                        ')',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10.0),
+                  sampleComment(),
+                  Divider(
+                    color: Colors.blue,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(child: SizedBox()),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CommentPage(widget.post)),
+                          );
+                        },
+                        child: Text('LAINNYA...'),
+                        textColor: Colors.green[700],
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CommentPage(widget.post)));
-        },
-        child: Icon(Icons.comment),
-      ),
     );
+  }
+
+  Widget sampleComment() {
+    int maxIndex = _commentList.length - 1;
+    if (_commentList.length == 0) {
+      return Text('');
+    } else {
+      return Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(_commentList[maxIndex].userName,
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+            Text(_commentList[maxIndex].comment,
+                style: TextStyle(fontSize: 16.0)),
+          ],
+        ),
+      );
+    }
   }
 }

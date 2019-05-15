@@ -4,6 +4,7 @@ class Post {
   String _key;
   String _photo;
   String _nama,
+      _agama,
       _userId,
       _tempatMakam,
       _usia,
@@ -24,6 +25,7 @@ class Post {
       this._userId,
       this._tempatMakam,
       this._usia,
+      this._agama,
       this._keterangan,
       this._tanggalSemayam,
       this._lokasiSemayam,
@@ -39,6 +41,8 @@ class Post {
   String get photo => _photo;
 
   String get nama => _nama;
+
+  get agama => _agama;
 
   get userId => _userId;
 
@@ -71,6 +75,7 @@ class Post {
     _usia = snapshot.value["usia"];
     _photo = snapshot.value['photo'];
     _alamat = snapshot.value['alamat'];
+    _agama = snapshot.value['agama'] ?? '';
     _tanggalMeninggal = snapshot.value["tanggalMeninggal"];
     _prosesi = snapshot.value["prosesi"];
     _lokasiSemayam = snapshot.value["lokasiSemayam"];
@@ -78,7 +83,7 @@ class Post {
     _tempatMakam = snapshot.value["tempatMakam"];
     _tanggalSemayam = snapshot.value["tanggalSemayam"];
     _waktuSemayam = snapshot.value["waktuSemayam"];
-    _keterangan = snapshot.value["keterangan"];
+    _keterangan = snapshot.value["keterangan"] ?? '';
     _timestamp = snapshot.value['timestamp'];
   }
 
@@ -86,6 +91,7 @@ class Post {
     _userId = json['userId'];
     _nama = json["nama"];
     _usia = json["usia"];
+    _agama = json['agama'] ?? '';
     _photo = json['photo'];
     _alamat = json['alamat'];
     _tanggalMeninggal = json["tanggalMeninggal"];
@@ -95,7 +101,7 @@ class Post {
     _tempatMakam = json["tempatMakam"];
     _tanggalSemayam = json["tanggalSemayam"];
     _waktuSemayam = json["waktuSemayam"];
-    _keterangan = json["keterangan"];
+    _keterangan = json["keterangan"] ?? '';
     _timestamp = json['timestamp'];
   }
 
@@ -103,6 +109,7 @@ class Post {
         'userId': _userId,
         'nama': _nama,
         'usia': _usia,
+    'agama': _agama ?? '',
         'photo': _photo,
         'alamat': _alamat,
         'tanggalMeninggal': _tanggalMeninggal,

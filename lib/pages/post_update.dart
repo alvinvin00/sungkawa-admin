@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:Sungkawa/model/post.dart';
+import 'package:Sungkawa/utilities/constants.dart';
 import 'package:Sungkawa/utilities/crud.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
@@ -22,7 +23,14 @@ class UpdatePost extends StatefulWidget {
 }
 
 class _UpdatePostState extends State<UpdatePost> {
-  String userId, nama, usia, alamat, lokasiSemayam, keterangan, tempatMakam;
+  String userId,
+      nama,
+      usia,
+      alamat,
+      lokasiSemayam,
+      keterangan,
+      tempatMakam,
+      agama;
   double _progress;
   bool isChanged = false;
   var postRef;
@@ -151,6 +159,27 @@ class _UpdatePostState extends State<UpdatePost> {
                 maxLength: 3,
                 maxLines: 1,
                 textCapitalization: TextCapitalization.words,
+              ),
+              DropdownButtonFormField(
+                decoration: InputDecoration(
+                    hintText: 'Agama',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5))),
+                value: agama,
+                items: Constants.agama.map((String value) {
+                  return DropdownMenuItem(
+                    child: Text(value),
+                    value: value,
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    agama = value;
+                    if (agama == 'Islam') {
+                      _prosesi = 'Dimakamkan';
+                    }
+                  });
+                },
               ),
               DateTimePickerFormField(
                 initialValue: tanggalMeninggal,
@@ -416,6 +445,7 @@ class _UpdatePostState extends State<UpdatePost> {
         'usia': usia,
         'photo': _url,
         'timestamp': timestamp,
+        'agama': agama,
         'userId': userId,
         'tanggalMeninggal': dateFormat.format(tanggalMeninggal),
         'alamat': alamat,

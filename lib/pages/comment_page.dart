@@ -140,10 +140,6 @@ class _CommentPageState extends State<CommentPage> {
           direction: DismissDirection.startToEnd,
           onDismissed: (direction) {
             crud.deleteComment(widget.post.key, _commentList[index].key);
-//              setState(() {
-//                _commentList.removeAt(index);
-//              });
-
             Scaffold.of(context).showSnackBar(
               SnackBar(
                 content: Text('Comment Removed'),
@@ -153,7 +149,7 @@ class _CommentPageState extends State<CommentPage> {
           },
           child: ListTile(
             title: Text(
-              _commentList[index].fullName,
+              _commentList[index].userName,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             trailing:
@@ -170,7 +166,6 @@ class _CommentPageState extends State<CommentPage> {
     print('Comment : ' + commentController.text);
     setState(() {
       crud.addComment(widget.post.key, {
-        'fullName': fullName,
         'comment': commentController.text,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
         'userId': userId,

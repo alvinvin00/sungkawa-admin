@@ -90,43 +90,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
               textAlign: TextAlign.center,
             ),
             actions: <Widget>[
-              FlatButton(
-                  onPressed: () {
-                    showCupertinoModalPopup(
-                        context: context,
-                        builder: (context) => CupertinoActionSheet(
-                            title: const Text(
-                              'Pilihan menu',
-                            ),
-                            actions: <Widget>[
-                              CupertinoActionSheetAction(
+              IconButton(
+                onPressed: () {
+                  showCupertinoModalPopup(
+                      context: context,
+                      builder: (context) =>
+                          CupertinoActionSheet(
+                              title: const Text(
+                                'Pilihan menu',
+                              ),
+                              actions: <Widget>[
+                                CupertinoActionSheetAction(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => About()));
+                                    },
+                                    child: Text('Tentang Kami')),
+                                CupertinoActionSheetAction(
+                                    isDestructiveAction: true,
+                                    onPressed: signOut,
+                                    child: Text(
+                                      'Sign Out',
+                                    )),
+                              ],
+                              cancelButton: CupertinoActionSheetAction(
                                   onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => About()));
+                                    Navigator.pop(context);
                                   },
-                                  child: Text('Tentang Kami')),
-                              CupertinoActionSheetAction(
-                                  isDestructiveAction: true,
-                                  onPressed: signOut,
                                   child: Text(
-                                    'Sign Out',
-                                  )),
-                            ],
-                            cancelButton: CupertinoActionSheetAction(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  'Cancel',
-                                  style: TextStyle(color: Colors.red),
-                                ))));
-                  },
-                  child: Text(
-                    'Options',
-                    style: TextStyle(color: Colors.white),
-                  ))
+                                    'Cancel',
+                                    style: TextStyle(color: Colors.red),
+                                  ))));
+                },
+                icon: Icon(Icons.more_vert),
+              )
             ],
             backgroundColor: Colors.green[800],
           ),
